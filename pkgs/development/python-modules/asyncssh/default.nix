@@ -21,14 +21,14 @@
 
 buildPythonPackage rec {
   pname = "asyncssh";
-  version = "2.19.0";
+  version = "2.20.0";
   pyproject = true;
 
   disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-cj3q1NBotVhwjcZqTKfnqTqBOqlBYDbsy5r0wDrizzA=";
+    hash = "sha256-AgtuOEsjKO+Gg5CK2Oc96ewrm2L9lkVx6pV7uphBKYM=";
   };
 
   build-system = [ setuptools ];
@@ -56,7 +56,8 @@ buildPythonPackage rec {
     openssh
     openssl
     pytestCheckHook
-  ] ++ lib.flatten (builtins.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (builtins.attrValues optional-dependencies);
 
   patches = [
     # Reverts https://github.com/ronf/asyncssh/commit/4b3dec994b3aa821dba4db507030b569c3a32730

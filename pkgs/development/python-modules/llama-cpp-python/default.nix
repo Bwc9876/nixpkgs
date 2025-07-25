@@ -4,7 +4,6 @@
   gcc13Stdenv,
   buildPythonPackage,
   fetchFromGitHub,
-  fetchpatch2,
 
   # nativeBuildInputs
   cmake,
@@ -40,27 +39,17 @@ let
 in
 buildPythonPackage rec {
   pname = "llama-cpp-python";
-  version = "0.3.6";
+  version = "0.3.14";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "abetlen";
     repo = "llama-cpp-python";
     tag = "v${version}";
-    hash = "sha256-d5nMgpS7m6WEILs222ztwphoqkAezJ+qt6sVKSlpIYI=";
+    hash = "sha256-RJP2QkelqxZuEoxI3CHyenqUJdjw2MsZKUKM+UUxJB8=";
     fetchSubmodules = true;
   };
   # src = /home/gaetan/llama-cpp-python;
-
-  patches = [
-    # fix segfault when running tests due to missing default Metal devices
-    (fetchpatch2 {
-      url = "https://github.com/ggerganov/llama.cpp/commit/acd38efee316f3a5ed2e6afcbc5814807c347053.patch?full_index=1";
-      stripLen = 1;
-      extraPrefix = "vendor/llama.cpp/";
-      hash = "sha256-71+Lpg9z5KPlaQTX9D85KS2LXFWLQNJJ18TJyyq3/pU=";
-    })
-  ];
 
   dontUseCmakeConfigure = true;
   SKBUILD_CMAKE_ARGS = lib.strings.concatStringsSep ";" (
@@ -72,7 +61,10 @@ buildPythonPackage rec {
     # -mcpu, breaking linux build as follows:
     #
     # cc1: error: unknown value ‘native+nodotprod+noi8mm+nosve’ for ‘-mcpu’
-    [ "-DGGML_NATIVE=off" ]
+    [
+      "-DGGML_NATIVE=off"
+      "-DGGML_BUILD_NUMBER=1"
+    ]
     ++ lib.optionals cudaSupport [
       "-DGGML_CUDA=on"
       "-DCUDAToolkit_ROOT=${lib.getDev cudaPackages.cuda_nvcc}"
@@ -80,9 +72,7 @@ buildPythonPackage rec {
     ]
   );
 
-  preBuild = ''
-    export CMAKE_BUILD_PARALLEL_LEVEL="$NIX_BUILD_CORES"
-  '';
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [
     cmake
@@ -128,7 +118,10 @@ buildPythonPackage rec {
   pythonImportsCheck = [ "llama_cpp" ];
 
   passthru = {
-    updateScript = gitUpdater { rev-prefix = "v"; };
+    updateScript = gitUpdater {
+      rev-prefix = "v";
+      allowedVersions = "^[.0-9]+$";
+    };
     tests = lib.optionalAttrs stdenvTarget.hostPlatform.isLinux {
       withCuda = llama-cpp-python.override {
         cudaSupport = true;

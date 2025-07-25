@@ -4,7 +4,6 @@
   buildPythonPackage,
   click,
   fetchFromGitHub,
-  fetchPypi,
   gitpython,
   importlib-metadata,
   jinja2,
@@ -52,7 +51,8 @@ buildPythonPackage rec {
   nativeCheckInputs = [
     pytest-asyncio
     pytestCheckHook
-  ] ++ lib.flatten (builtins.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (builtins.attrValues optional-dependencies);
 
   preCheck = ''
     export HOME=$(mktemp -d)

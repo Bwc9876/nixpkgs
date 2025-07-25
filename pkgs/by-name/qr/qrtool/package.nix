@@ -9,35 +9,34 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "qrtool";
-  version = "0.11.7";
+  version = "0.11.8";
 
   src = fetchFromGitHub {
     owner = "sorairolake";
     repo = "qrtool";
     rev = "v${version}";
-    hash = "sha256-vgAkhEbU/Wm2rUEMqRx4WGSgLI7nZ5+OrGUc91l6+7M=";
+    hash = "sha256-f/2AaNnojtZMhJod6ukLwEq+Bsu6O2oTD9OWGL8IS80=";
   };
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-6UeQ1Gs/jA7rHNGnPE5V9rebbsfOR5GrSNOO2FLSra8=";
+  cargoHash = "sha256-wXs3Y0g+inUU3Qho5UhZOJhNDs65HS6FjPdZQBuwLM0=";
 
   nativeBuildInputs = [
     asciidoctor
     installShellFiles
   ];
 
-  postInstall =
-    ''
-      # Built by ./build.rs using `asciidoctor`
-      installManPage ./target/*/release/build/qrtool*/out/*.?
+  postInstall = ''
+    # Built by ./build.rs using `asciidoctor`
+    installManPage ./target/*/release/build/qrtool*/out/*.?
 
-    ''
-    + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
-      installShellCompletion --cmd qrtool \
-        --bash <($out/bin/qrtool --generate-completion bash) \
-        --fish <($out/bin/qrtool --generate-completion fish) \
-        --zsh <($out/bin/qrtool --generate-completion zsh)
-    '';
+  ''
+  + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    installShellCompletion --cmd qrtool \
+      --bash <($out/bin/qrtool --generate-completion bash) \
+      --fish <($out/bin/qrtool --generate-completion fish) \
+      --zsh <($out/bin/qrtool --generate-completion zsh)
+  '';
 
   meta = with lib; {
     maintainers = with maintainers; [ philiptaron ];

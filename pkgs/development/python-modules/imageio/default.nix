@@ -4,7 +4,7 @@
   buildPythonPackage,
   fetchFromGitHub,
   isPyPy,
-  substituteAll,
+  replaceVars,
 
   # build-system
   setuptools,
@@ -42,8 +42,7 @@ buildPythonPackage rec {
   };
 
   patches = lib.optionals (!stdenv.hostPlatform.isDarwin) [
-    (substituteAll {
-      src = ./libgl-path.patch;
+    (replaceVars ./libgl-path.patch {
       libgl = "${libGL.out}/lib/libGL${stdenv.hostPlatform.extensions.sharedLibrary}";
     })
   ];
@@ -76,14 +75,13 @@ buildPythonPackage rec {
     heif = [ pillow-heif ];
   };
 
-  nativeCheckInputs =
-    [
-      fsspec
-      psutil
-      pytestCheckHook
-    ]
-    ++ fsspec.optional-dependencies.github
-    ++ lib.flatten (builtins.attrValues optional-dependencies);
+  nativeCheckInputs = [
+    fsspec
+    psutil
+    pytestCheckHook
+  ]
+  ++ fsspec.optional-dependencies.github
+  ++ lib.flatten (builtins.attrValues optional-dependencies);
 
   pytestFlagsArray = [ "-m 'not needs_internet'" ];
 

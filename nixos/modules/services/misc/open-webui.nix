@@ -56,7 +56,7 @@ in
         '';
         description = ''
           Extra environment variables for Open-WebUI.
-          For more details see https://docs.openwebui.com/getting-started/advanced-topics/env-configuration/
+          For more details see <https://docs.openwebui.com/getting-started/advanced-topics/env-configuration/>
         '';
       };
 
@@ -94,7 +94,8 @@ in
         HF_HOME = ".";
         SENTENCE_TRANSFORMERS_HOME = ".";
         WEBUI_URL = "http://localhost:${toString cfg.port}";
-      } // cfg.environment;
+      }
+      // cfg.environment;
 
       serviceConfig = {
         ExecStart = "${lib.getExe cfg.package} serve --host \"${cfg.host}\" --port ${toString cfg.port}";
@@ -120,6 +121,33 @@ in
         RestrictRealtime = true;
         SystemCallArchitectures = "native";
         UMask = "0077";
+        CapabilityBoundingSet = "";
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+          "AF_UNIX"
+        ];
+        ProtectClock = true;
+        ProtectProc = "invisible";
+        SystemCallFilter = [
+          "@system-service"
+          "~@privileged"
+        ];
+        SupplementaryGroups = [ "render" ]; # for rocm to access /dev/dri/renderD* devices
+        DeviceAllow = [
+          # CUDA
+          # https://docs.nvidia.com/dgx/pdf/dgx-os-5-user-guide.pdf
+          "char-nvidiactl"
+          "char-nvidia-caps"
+          "char-nvidia-frontend"
+          "char-nvidia-uvm"
+          # ROCm
+          "char-drm"
+          "char-fb"
+          "char-kfd"
+          # WSL (Windows Subsystem for Linux)
+          "/dev/dxg"
+        ];
       };
     };
 

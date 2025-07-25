@@ -10,13 +10,13 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "mint-y-icons";
-  version = "1.8.3";
+  version = "1.8.4";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
-    repo = pname;
+    repo = "mint-y-icons";
     rev = version;
-    hash = "sha256-xGPihqXUraJy9lDCSVjQlNxrhETEcjBTYhyFsZGJRGo=";
+    hash = "sha256-ftiV9l7hTmWdtw36Z2GKpJZuRwQQ3MQWYIgb62VBde0=";
   };
 
   propagatedBuildInputs = [
@@ -30,6 +30,12 @@ stdenvNoCC.mkDerivation rec {
   ];
 
   dontDropIconThemeCache = true;
+
+  postPatch = ''
+    # Breaks gtk-update-icon-cache
+    # https://github.com/linuxmint/mint-y-icons/issues/494
+    find usr/share/icons/Mint-Y/apps/ -type l -name "1AC2_Battle.net Launcher.0.png" -delete
+  '';
 
   installPhase = ''
     runHook preInstall
@@ -49,6 +55,6 @@ stdenvNoCC.mkDerivation rec {
     description = "Mint-Y icon theme";
     license = licenses.gpl3; # from debian/copyright
     platforms = platforms.linux;
-    maintainers = teams.cinnamon.members;
+    teams = [ teams.cinnamon ];
   };
 }

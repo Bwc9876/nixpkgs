@@ -21,6 +21,8 @@ rustPlatform.buildRustPackage rec {
   useFetchCargoVendor = true;
   cargoHash = "sha256-J9sGXJbGbO9UgZfgqxqzbiJz9j6WMpq3qC2ys7OJnII=";
 
+  buildFeatures = [ "cli" ];
+
   checkFlags = [
     # remote access
     "--skip=generation::tests::can_generate_from_remote_repo_with_subdir"
@@ -34,12 +36,12 @@ rustPlatform.buildRustPackage rec {
     };
   };
 
-  meta = with lib; {
+  meta = {
     description = "Scaffolding tool to get new projects up and running quickly";
     homepage = "https://github.com/Keats/kickstart";
     changelog = "https://github.com/Keats/kickstart/releases/tag/v${version}";
-    license = licenses.mit;
-    maintainers = with maintainers; [ gaelreyrol ];
+    license = lib.licenses.mit;
+    maintainers = with lib.maintainers; [ gaelreyrol ];
     mainProgram = "kickstart";
   };
 }

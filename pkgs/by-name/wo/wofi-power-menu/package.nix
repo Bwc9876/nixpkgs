@@ -8,19 +8,19 @@
   nix-update-script,
 }:
 
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage (finalAttrs: {
   pname = "wofi-power-menu";
-  version = "0.2.6";
+  version = "0.2.9";
 
   src = fetchFromGitHub {
     owner = "szaffarano";
     repo = "wofi-power-menu";
-    tag = "v${version}";
-    hash = "sha256-UDDDtI6wnx64KG+1/S6bYTc1xi1vOFuZOmRCLK2Yzew=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-xio/Gt37PJ/0Di22na4USmfah2GV+xM2eV4NnGBeVfY=";
   };
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-rlEjktBGBrOqG82PA7LSiXo0iyEPpeWgLix/sVd/dTM=";
+  cargoHash = "sha256-diDLKP7JGzrXgdZMwSmg70dbFlMLLWp4Ad/ejjiOSlc=";
 
   nativeBuildInputs = [ makeWrapper ];
 
@@ -38,9 +38,9 @@ rustPlatform.buildRustPackage rec {
   meta = {
     description = "Highly configurable power menu using the wofi launcher power-menu";
     homepage = "https://github.com/szaffarano/wofi-power-menu";
-    changelog = "https://github.com/szaffarano/wofi-power-menu/releases/tag/v${version}";
+    changelog = "https://github.com/szaffarano/wofi-power-menu/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ defelo ];
     mainProgram = "wofi-power-menu";
   };
-}
+})

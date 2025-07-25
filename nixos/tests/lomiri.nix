@@ -139,12 +139,8 @@ let
       Move the mouse to a screen location and hit left-click.
       """
 
-      # Need to reset to top-left, --absolute doesn't work?
-      machine.execute("ydotool mousemove -- -10000 -10000")
-      machine.sleep(2)
-
       # Move
-      machine.execute(f"ydotool mousemove -- {xpos} {ypos}")
+      machine.execute(f"ydotool mousemove --absolute -- {xpos} {ypos}")
       machine.sleep(2)
 
       # Click (C0 - left button: down & up)
@@ -157,7 +153,7 @@ let
       """
 
       # Using the keybind has a chance of instantly closing the menu again? Just click the button
-      mouse_click(20, 30)
+      mouse_click(15, 15)
 
   '';
 
@@ -448,9 +444,6 @@ in
               machine.send_key("ctrl-alt-t")
               wait_for_text(r"(${user}|machine)")
               machine.screenshot("terminal_opens")
-
-              # lomiri-terminal-app has a separate VM test to test its basic functionality
-
               machine.send_key("alt-f4")
 
           # We want the ability to launch applications
@@ -601,8 +594,6 @@ in
               wait_for_text(r"(${user}|machine)")
               machine.screenshot("terminal_opens")
 
-              # lomiri-terminal-app has a separate VM test to test its basic functionality
-
               # for the LSS lomiri-content-hub test to work reliably, we need to kick off peer collecting
               machine.send_chars("lomiri-content-hub-test-importer\n")
               wait_for_text(r"(/build/source|hub.cpp|handler.cpp|void|virtual|const)") # awaiting log messages from lomiri-content-hub
@@ -658,7 +649,7 @@ in
               machine.screenshot("settings_lomiri-content-hub_peers")
 
               # Select Morph as content source
-              mouse_click(370, 100)
+              mouse_click(340, 80)
 
               # Expect Morph to be brought into the foreground, with its Downloads page open
               wait_for_text("No downloads")
@@ -858,8 +849,8 @@ in
       ocr = [ "Log Out" ];
       extraCheck = ''
         # We should be able to log out and return to the greeter
-        mouse_click(720, 280) # "Log Out"
-        mouse_click(400, 240) # confirm logout
+        mouse_click(600, 280) # "Log Out"
+        mouse_click(340, 220) # confirm logout
         machine.wait_until_fails("pgrep -u ${user} -f 'lomiri --mode=full-shell'")
       '';
     })

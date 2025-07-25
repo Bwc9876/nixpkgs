@@ -19,14 +19,14 @@
 
 buildPythonPackage rec {
   pname = "trino-python-client";
-  version = "0.322.0";
+  version = "0.323.0";
   format = "setuptools";
 
   src = fetchFromGitHub {
-    repo = pname;
+    repo = "trino-python-client";
     owner = "trinodb";
     tag = version;
-    hash = "sha256-Hl88Keavyp1QBw67AFbevy/btzNs7UlsKQ93K02YgLM=";
+    hash = "sha256-Nr7p7x5cxxuPv2NUh1uMth97OQ+H2KBlu0SHVJ7Zu1M=";
   };
 
   nativeBuildInputs = [ setuptools ];
@@ -47,7 +47,8 @@ buildPythonPackage rec {
   nativeCheckInputs = [
     httpretty
     pytestCheckHook
-  ] ++ optional-dependencies.all;
+  ]
+  ++ optional-dependencies.all;
 
   pythonImportsCheck = [ "trino" ];
 
@@ -65,6 +66,9 @@ buildPythonPackage rec {
     description = "Client for the Trino distributed SQL Engine";
     homepage = "https://github.com/trinodb/trino-python-client";
     license = licenses.asl20;
-    maintainers = with maintainers; [ cpcloud ];
+    maintainers = with maintainers; [
+      cpcloud
+      flokli
+    ];
   };
 }

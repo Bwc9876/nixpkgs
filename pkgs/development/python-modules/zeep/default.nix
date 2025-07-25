@@ -59,8 +59,8 @@ buildPythonPackage rec {
   ];
 
   optional-dependencies = {
-    async_require = [ httpx ];
-    xmlsec_require = [ xmlsec ];
+    async = [ httpx ];
+    xmlsec = [ xmlsec ];
   };
 
   pythonImportsCheck = [ "zeep" ];
@@ -75,7 +75,8 @@ buildPythonPackage rec {
     pytest-httpx
     pytestCheckHook
     requests-mock
-  ] ++ lib.flatten (builtins.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (builtins.attrValues optional-dependencies);
 
   disabledTests = [
     # Failed: External connections not allowed during tests.

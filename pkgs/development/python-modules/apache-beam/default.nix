@@ -17,7 +17,6 @@
   yapf,
 
   # dependencies
-  cloudpickle,
   crcmod,
   dill,
   fastavro,
@@ -42,6 +41,7 @@
 
   # tests
   python,
+  docstring-parser,
   freezegun,
   hypothesis,
   mock,
@@ -57,18 +57,19 @@
   sqlalchemy,
   tenacity,
   testcontainers,
+  pythonAtLeast,
 }:
 
 buildPythonPackage rec {
   pname = "apache-beam";
-  version = "2.62.0";
+  version = "2.65.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "apache";
     repo = "beam";
     tag = "v${version}";
-    hash = "sha256-vLvnRZAQg9nhUOI0SIUn+9Y8O7edK3445PkdhPbhO3Y=";
+    hash = "sha256-vDW0PVNep+egIZBe4t8IPwLgsQDmoO4rrA4wUoAHzfg=";
   };
 
   pythonRelaxDeps = [
@@ -82,11 +83,16 @@ buildPythonPackage rec {
     # See https://github.com/NixOS/nixpkgs/issues/156957
     "dill"
 
+    "numpy"
+
+    "protobuf"
+
     # As of apache-beam v2.45.0, the requirement is pyarrow<10.0.0,>=0.15.1, but
     # the current (2023-02-22) nixpkgs's pyarrow version is 11.0.0.
     "pyarrow"
 
     "pydot"
+    "redis"
   ];
 
   sourceRoot = "${src.name}/sdks/python";
@@ -105,7 +111,6 @@ buildPythonPackage rec {
   ];
 
   dependencies = [
-    cloudpickle
     crcmod
     dill
     fastavro
@@ -148,6 +153,7 @@ buildPythonPackage rec {
   pythonImportsCheck = [ "apache_beam" ];
 
   nativeCheckInputs = [
+    docstring-parser
     freezegun
     hypothesis
     mock
@@ -281,6 +287,7 @@ buildPythonPackage rec {
     "apache_beam/ml/inference/sklearn_inference_test.py"
     "apache_beam/ml/inference/utils_test.py"
     "apache_beam/ml/rag/chunking/base_test.py"
+    "apache_beam/ml/rag/ingestion/base_test.py"
     "apache_beam/pipeline_test.py"
     "apache_beam/runners/direct/direct_runner_test.py"
     "apache_beam/runners/direct/sdf_direct_runner_test.py"
@@ -324,9 +331,21 @@ buildPythonPackage rec {
     # grpc_status:14, grpc_message:"Cancelling all calls"}"
     # Upstream issue https://github.com/apache/beam/issues/33851
     "apache_beam/runners/portability/portable_runner_test.py"
+  ]
+  ++ lib.optionals (pythonAtLeast "3.13") [
+    # > instruction = ofs_table[pc]
+    # E KeyError: 18
+    "apache_beam/typehints/trivial_inference_test.py"
   ];
 
-  disabledTests = lib.optionals stdenv.hostPlatform.isDarwin [
+  disabledTests = [
+    # IndexError: list index out of range
+    "test_only_sample_exceptions"
+
+    # AssertionError: False is not true
+    "test_samples_all_with_both_experiments"
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
     #  PermissionError: [Errno 13] Permission denied: '/tmp/...'
     "test_cache_manager_uses_local_ib_cache_root"
     "test_describe_all_recordings"
@@ -334,6 +353,20 @@ buildPythonPackage rec {
     "test_get_cache_manager_creates_cache_manager_if_absent"
     "test_streaming_cache_uses_local_ib_cache_root"
     "test_track_user_pipeline_cleanup_non_inspectable_pipeline"
+  ]
+  ++ lib.optionals (pythonAtLeast "3.12") [
+    # TypeError: Could not determine schema for type hint Any.
+    "test_batching_beam_row_input"
+    "test_auto_convert"
+    "test_unbatching_series"
+    "test_batching_beam_row_to_dataframe"
+
+    # AssertionError: Any != <class 'int'>
+    "test_pycallable_map"
+    "testAlwaysReturnsEarly"
+
+    # TypeError: Expected Iterator in return type annotatio
+    "test_get_output_batch_type"
   ];
 
   meta = {

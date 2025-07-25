@@ -9,13 +9,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "mdds";
-  version = "3.0.0";
+  version = "2.1.1";
 
   src = fetchFromGitLab {
     owner = "mdds";
     repo = "mdds";
     rev = finalAttrs.version;
-    hash = "sha256-XIfrbnjY3bpnbRBnE44dQNJm3lhL0Y1Mm0sayh3T2aY=";
+    hash = "sha256-a412LpgDiYM8TMToaUrTlHtblYS1HehzrDOwvIAAxiA=";
   };
 
   nativeBuildInputs = [ autoreconfHook ];
@@ -34,7 +34,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = "Collection of multi-dimensional data structure and indexing algorithms";
     changelog = "https://gitlab.com/mdds/mdds/-/blob/${finalAttrs.version}/CHANGELOG";
     license = licenses.mit;
-    maintainers = [ maintainers.AndersonTorres ];
+    maintainers = [ ];
     platforms = platforms.unix;
   };
 })

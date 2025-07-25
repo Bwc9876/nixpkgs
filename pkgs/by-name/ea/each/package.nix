@@ -10,7 +10,7 @@ rustPlatform.buildRustPackage rec {
 
   src = fetchFromGitHub {
     owner = "arraypad";
-    repo = pname;
+    repo = "each";
     rev = "v${version}";
     sha256 = "sha256-5Aa/uHWrU4bpWd28Uddnuhmi6guHy09W9AU8sAfea6I=";
   };
@@ -19,7 +19,7 @@ rustPlatform.buildRustPackage rec {
   cargoHash = "sha256-TfAT36/JeBjBxymnX1gIyCEPZcxTW4fPVIOhHF3z9wA=";
 
   meta = with lib; {
-    description = " A better way of working with structured data on the command line";
+    description = "A better way of working with structured data on the command line";
     mainProgram = "each";
     homepage = "https://github.com/arraypad/each";
     license = with licenses; [ mit ];

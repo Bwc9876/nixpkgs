@@ -31,10 +31,10 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "pyBigWig" ];
 
-  pytestFlagsArray = [ "pyBigWigTest/test*.py" ];
+  enabledTestPaths = [ "pyBigWigTest/test*.py" ];
 
   disabledTests = [
-    # Test file is donwloaded from GitHub
+    # Test file is downloaded from GitHub
     "testAll"
     "testBigBed"
     "testFoo"

@@ -5,6 +5,7 @@
   jre_headless,
   linkFarm,
   makeWrapper,
+  nixosTests,
   plugins ? [ ],
 }:
 let
@@ -17,11 +18,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "Reposilite";
-  version = "3.5.20";
+  version = "3.5.25";
 
   src = fetchurl {
     url = "https://maven.reposilite.com/releases/com/reposilite/reposilite/${finalAttrs.version}/reposilite-${finalAttrs.version}-all.jar";
-    hash = "sha256-IdUHtulkSKvXatAs+BmzXgwv9oJz1XeRVtpEyIZ7BY4=";
+    hash = "sha256-g1a+9TGRqRK4qcJW2ZACsiew5f27T4qkm/A+c7sVxHI=";
   };
 
   dontUnpack = true;
@@ -40,6 +41,11 @@ stdenv.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  passthru = {
+    tests = nixosTests.reposilite;
+    updateScript = ./update.sh;
+  };
 
   meta = {
     description = "Lightweight and easy-to-use repository management software dedicated for the Maven based artifacts in the JVM ecosystem";

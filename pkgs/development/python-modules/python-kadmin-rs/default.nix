@@ -17,19 +17,19 @@
 
 buildPythonPackage rec {
   pname = "python-kadmin-rs";
-  version = "0.5.2";
+  version = "0.6.1";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "authentik-community";
     repo = "kadmin-rs";
     rev = "kadmin/version/${version}";
-    hash = "sha256-5sbYnEoT0/3BTJBipEy+DpIDbX6mRIpAE6CuAoJ5bw4=";
+    hash = "sha256-FEOWsUQhLXU1xqaTLe6GKO1OYi5fVDyT1dowiAyzbGI=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit src;
-    hash = "sha256-1J2aaEj/G7TE+EptWNwb5Vj048W6DOJNUBWPd9F4DqU=";
+    hash = "sha256-tvjwNfjMc8k4GK9rZXFG9CfcSlUW/B95YimLtH4iEbM=";
   };
 
   buildInputs = [

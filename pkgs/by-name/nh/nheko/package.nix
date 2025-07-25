@@ -43,36 +43,35 @@ stdenv.mkDerivation rec {
     qt6Packages.wrapQtAppsHook
   ];
 
-  buildInputs =
-    [
-      boost
-      cmark
-      coeurl
-      curl
-      kdsingleapplication
-      libevent
-      libsecret
-      lmdb
-      mtxclient
-      nlohmann_json
-      olm
-      qt6Packages.qtbase
-      qt6Packages.qtimageformats
-      qt6Packages.qtkeychain
-      qt6Packages.qtmultimedia
-      qt6Packages.qttools
-      qt6Packages.qtwayland
-      qt6Packages.qt-jdenticon
-      re2
-      spdlog
-    ]
-    ++ (with gst_all_1; [
-      gstreamer
-      gst-plugins-base
-      (gst-plugins-good.override { qt6Support = true; })
-      gst-plugins-bad
-      libnice
-    ]);
+  buildInputs = [
+    boost
+    cmark
+    coeurl
+    curl
+    kdsingleapplication
+    libevent
+    libsecret
+    lmdb
+    mtxclient
+    nlohmann_json
+    olm
+    qt6Packages.qtbase
+    qt6Packages.qtimageformats
+    qt6Packages.qtkeychain
+    qt6Packages.qtmultimedia
+    qt6Packages.qttools
+    qt6Packages.qtwayland
+    qt6Packages.qt-jdenticon
+    re2
+    spdlog
+  ]
+  ++ (with gst_all_1; [
+    gstreamer
+    gst-plugins-base
+    (gst-plugins-good.override { qt6Support = true; })
+    gst-plugins-bad
+    libnice
+  ]);
 
   cmakeFlags = [
     "-DCOMPILE_QML=ON" # see https://github.com/Nheko-Reborn/nheko/issues/389
@@ -80,7 +79,12 @@ stdenv.mkDerivation rec {
 
   preFixup = ''
     # add gstreamer plugins path to the wrapper
-    qtWrapperArgs+=(--prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0")
+    # unset QT_STYLE_OVERRIDE to avoid showing a blank window when started
+    # https://github.com/NixOS/nixpkgs/issues/333009
+    qtWrapperArgs+=(
+      --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0"
+      --unset QT_STYLE_OVERRIDE
+    )
   '';
 
   meta = with lib; {

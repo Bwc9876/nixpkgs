@@ -27,7 +27,7 @@
   webp-pixbuf-loader,
   icu,
   gst_all_1,
-  clapper,
+  clapper-unwrapped,
   # clapper support is still experimental and has bugs.
   # See https://github.com/GeopJr/Tuba/pull/931
   clapperSupport ? false,
@@ -36,13 +36,13 @@
 
 stdenv.mkDerivation rec {
   pname = "tuba";
-  version = "0.9.1";
+  version = "0.9.2";
 
   src = fetchFromGitHub {
     owner = "GeopJr";
     repo = "Tuba";
     rev = "v${version}";
-    hash = "sha256-ouS/aGfjTLd88nWc5lJwYJ20ukzuXE+b7uZ4eMEsdSk=";
+    hash = "sha256-SQrk6zsn3zZQTIruqVfjzs5cNyT2pAvM8XNI8SmyFM0=";
   };
 
   nativeBuildInputs = [
@@ -56,32 +56,31 @@ stdenv.mkDerivation rec {
     gobject-introspection
   ];
 
-  buildInputs =
-    [
-      glib
-      glib-networking
-      gtksourceview5
-      json-glib
-      libxml2
-      libgee
-      libsoup_3
-      gtk4
-      libadwaita
-      libsecret
-      libwebp
-      libspelling
-      icu
-    ]
-    ++ (with gst_all_1; [
-      gstreamer
-      gst-libav
-      gst-plugins-base
-      (gst-plugins-good.override { gtkSupport = true; })
-      gst-plugins-bad
-    ])
-    ++ lib.optionals clapperSupport [
-      clapper
-    ];
+  buildInputs = [
+    glib
+    glib-networking
+    gtksourceview5
+    json-glib
+    libxml2
+    libgee
+    libsoup_3
+    gtk4
+    libadwaita
+    libsecret
+    libwebp
+    libspelling
+    icu
+  ]
+  ++ (with gst_all_1; [
+    gstreamer
+    gst-libav
+    gst-plugins-base
+    (gst-plugins-good.override { gtkSupport = true; })
+    gst-plugins-bad
+  ])
+  ++ lib.optionals clapperSupport [
+    clapper-unwrapped
+  ];
 
   mesonFlags = [
     (lib.mesonBool "clapper" clapperSupport)
@@ -112,12 +111,10 @@ stdenv.mkDerivation rec {
     mainProgram = "dev.geopjr.Tuba";
     license = lib.licenses.gpl3Only;
     changelog = "https://github.com/GeopJr/Tuba/releases/tag/v${version}";
-    maintainers =
-      with lib.maintainers;
-      [
-        chuangzhu
-        donovanglover
-      ]
-      ++ lib.teams.gnome-circle.members;
+    maintainers = with lib.maintainers; [
+      chuangzhu
+      donovanglover
+    ];
+    teams = [ lib.teams.gnome-circle ];
   };
 }

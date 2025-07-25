@@ -6,46 +6,57 @@
   wrapGAppsHook4,
   glib,
   nix-update-script,
+  stdenv,
+  meson,
+  ninja,
+  cargo,
+  rustc,
+  sqlite,
+  openssl,
+  desktop-file-utils,
 }:
 
-rustPlatform.buildRustPackage rec {
+stdenv.mkDerivation rec {
   pname = "waytrogen";
-  version = "0.6.7";
+  version = "0.7.3";
 
   src = fetchFromGitHub {
     owner = "nikolaizombie1";
     repo = "waytrogen";
     tag = version;
-    hash = "sha256-JlqRlB/iMeFp229bF4u7M+Z9m9zlizHgqbfmszNwd9k=";
+    hash = "sha256-vFzOGadWR5xwhIKrKPHoAHstoeyFw4GrS5aYlpvEF5E=";
   };
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-S4DPvQ2unFt13eLFS91z7TyfFz7uwMMIgsEQ/JPe0e8=";
+  cargoDeps = rustPlatform.fetchCargoVendor {
+    inherit pname version src;
+    hash = "sha256-k6n6aWEJ/8Dkbd68CJfJ7kbRTltCuQ4AtZ5dALFD3lU=";
+  };
 
   nativeBuildInputs = [
     pkg-config
     wrapGAppsHook4
+    meson
+    ninja
+    rustPlatform.cargoSetupHook
+    cargo
+    rustc
+    desktop-file-utils
   ];
 
-  buildInputs = [ glib ];
+  buildInputs = [
+    glib
+    sqlite
+    openssl
+  ];
+
+  preBuild = ''export OUT_PATH=$out'';
 
   env = {
     OPENSSL_NO_VENDOR = 1;
   };
 
-  postBuild = ''
-    install -Dm644 org.Waytrogen.Waytrogen.gschema.xml -t $out/share/gsettings-schemas/$name/glib-2.0/schemas
-    glib-compile-schemas $out/share/gsettings-schemas/$name/glib-2.0/schemas
-  '';
-
-  postInstall = ''
-    install -Dm644 waytrogen.desktop $out/share/applications/waytrogen.desktop
-    install -Dm644 README-Assets/WaytrogenLogo.svg $out/share/icons/hicolor/scalable/apps/waytrogen.svg
-    while IFS= read -r lang; do
-          mkdir -p $out/share/locale/$lang/LC_MESSAGES
-          msgfmt locales/$lang/LC_MESSAGES/waytrogen.po -o $out/share/locale/$lang/LC_MESSAGES/waytrogen.mo
-    done < locales/LINGUAS
-  '';
+  mesonFlags = [ "-Dcargo_features=nixos" ];
 
   passthru.updateScript = nix-update-script { };
 

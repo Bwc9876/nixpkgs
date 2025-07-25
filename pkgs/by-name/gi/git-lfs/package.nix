@@ -81,21 +81,20 @@ buildGoModule rec {
     [ "-skip=^${builtins.concatStringsSep "$|^" skippedTests}$" ]
   );
 
-  postInstall =
-    ''
-      installManPage man/man*/*
-    ''
-    + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
-      installShellCompletion --cmd git-lfs \
-        --bash <($out/bin/git-lfs completion bash) \
-        --fish <($out/bin/git-lfs completion fish) \
-        --zsh <($out/bin/git-lfs completion zsh)
-    '';
+  postInstall = ''
+    installManPage man/man*/*
+  ''
+  + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    installShellCompletion --cmd git-lfs \
+      --bash <($out/bin/git-lfs completion bash) \
+      --fish <($out/bin/git-lfs completion fish) \
+      --zsh <($out/bin/git-lfs completion zsh)
+  '';
 
   nativeInstallCheckInputs = [
     versionCheckHook
   ];
-  versionCheckProgramArg = [ "--version" ];
+  versionCheckProgramArg = "--version";
   doInstallCheck = true;
 
   passthru = {

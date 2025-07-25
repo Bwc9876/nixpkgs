@@ -24,14 +24,14 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "recordbox";
-  version = "0.9.2";
+  version = "0.9.3";
 
   src = fetchFromGitea {
     domain = "codeberg.org";
     owner = "edestcroix";
     repo = "Recordbox";
     rev = "refs/tags/v${finalAttrs.version}";
-    hash = "sha256-Vt/uOueDKBjCVgFg6gMnOvbvR37udJ6J3BjE0LaL4Gw=";
+    hash = "sha256-168L5i6mXeEqv7EKPMq4zHP5JRVxC7MNrUE9yj1zI60=";
   };
 
   # Patch in our Cargo.lock and ensure AppStream tests don't use the network
@@ -65,21 +65,20 @@ stdenv.mkDerivation (finalAttrs: {
     wrapGAppsHook4
   ];
 
-  buildInputs =
-    [
-      gtk4
-      hicolor-icon-theme
-      libadwaita
-      sqlite
-    ]
-    ++ (with gst_all_1; [
-      gst-plugins-bad
-      gst-plugins-base
-      gst-plugins-good
-      gst-plugins-rs
-      gst-plugins-ugly
-      gstreamer
-    ]);
+  buildInputs = [
+    gtk4
+    hicolor-icon-theme
+    libadwaita
+    sqlite
+  ]
+  ++ (with gst_all_1; [
+    gst-plugins-bad
+    gst-plugins-base
+    gst-plugins-good
+    gst-plugins-rs
+    gst-plugins-ugly
+    gstreamer
+  ]);
 
   mesonBuildType = "release";
 

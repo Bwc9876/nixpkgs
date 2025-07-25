@@ -21,13 +21,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "lgogdownloader";
-  version = "3.16";
+  version = "3.17";
 
   src = fetchFromGitHub {
     owner = "Sude-";
     repo = "lgogdownloader";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-coPUPercfpB8LilBn5Uww9rEM+X9QAgzDECtQ1Ui/hg=";
+    hash = "sha256-rERcwPVuioZT4lqw4SUaM0TQIks6ggA5x8fuI+1GAsk=";
   };
 
   nativeBuildInputs = [
@@ -35,22 +35,22 @@ stdenv.mkDerivation (finalAttrs: {
     pkg-config
     help2man
     html-tidy
-  ] ++ lib.optional enableGui libsForQt5.wrapQtAppsHook;
+  ]
+  ++ lib.optional enableGui libsForQt5.wrapQtAppsHook;
 
-  buildInputs =
-    [
-      boost
-      curl
-      htmlcxx
-      jsoncpp
-      liboauth
-      rhash
-      tinyxml-2
-    ]
-    ++ lib.optionals enableGui [
-      libsForQt5.qtbase
-      libsForQt5.qtwebengine
-    ];
+  buildInputs = [
+    boost
+    curl
+    htmlcxx
+    jsoncpp
+    liboauth
+    rhash
+    tinyxml-2
+  ]
+  ++ lib.optionals enableGui [
+    libsForQt5.qtbase
+    libsForQt5.qtwebengine
+  ];
 
   cmakeFlags = lib.optional enableGui "-DUSE_QT_GUI=ON";
 

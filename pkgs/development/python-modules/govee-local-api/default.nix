@@ -9,7 +9,7 @@
 
 buildPythonPackage rec {
   pname = "govee-local-api";
-  version = "2.0.0";
+  version = "2.1.0";
   pyproject = true;
 
   disabled = pythonOlder "3.10";
@@ -18,8 +18,14 @@ buildPythonPackage rec {
     owner = "Galorhallen";
     repo = "govee-local-api";
     tag = "v${version}";
-    hash = "sha256-1n5HPFI/E/I4eepnpQg8hhIksr48igVy56gQ0UiMYHU=";
+    hash = "sha256-a5x4RbZ5+ryByr6/yGJw2/dNJBR7/JTYBcvA+Eqygqc=";
   };
+
+  postPatch = ''
+    # dont depend on poetry at runtime
+    # https://github.com/Galorhallen/govee-local-api/pull/75/files#r1943826599
+    sed -i '/poetry = "^1.8.5"/d' pyproject.toml
+  '';
 
   build-system = [ poetry-core ];
 

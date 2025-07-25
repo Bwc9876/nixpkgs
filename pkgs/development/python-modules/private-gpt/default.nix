@@ -8,6 +8,7 @@
   poetry-core,
 
   # dependencies
+  cryptography,
   docx2txt,
   fastapi,
   injector,
@@ -16,7 +17,6 @@
   python-multipart,
   pyyaml,
   transformers,
-  uvicorn,
   watchdog,
 
   # optional-dependencies
@@ -44,13 +44,16 @@ buildPythonPackage rec {
 
   pythonRelaxDeps = [
     "cryptography"
+    "docx2txt"
     "fastapi"
     "llama-index-core"
     "llama-index-readers-file"
     "python-multipart"
+    "watchdog"
   ];
 
   dependencies = [
+    cryptography
     docx2txt
     fastapi
     injector
@@ -59,9 +62,9 @@ buildPythonPackage rec {
     python-multipart
     pyyaml
     transformers
-    uvicorn
     watchdog
-  ] ++ lib.flatten (builtins.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (builtins.attrValues optional-dependencies);
 
   # This is needed for running the tests and the service in offline mode,
   # See related issue at https://github.com/zylon-ai/private-gpt/issues/1870

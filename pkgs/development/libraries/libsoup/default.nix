@@ -68,46 +68,43 @@ stdenv.mkDerivation rec {
     pkg-config
   ];
 
-  nativeBuildInputs =
-    [
-      meson
-      ninja
-      pkg-config
-      glib
-    ]
-    ++ lib.optionals withIntrospection [
-      gobject-introspection
-      vala
-    ];
+  nativeBuildInputs = [
+    meson
+    ninja
+    pkg-config
+    glib
+  ]
+  ++ lib.optionals withIntrospection [
+    gobject-introspection
+    vala
+  ];
 
-  buildInputs =
-    [
-      sqlite
-      libpsl
-      glib.out
-      brotli
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [
-      libsysprof-capture
-    ];
+  buildInputs = [
+    sqlite
+    libpsl
+    glib.out
+    brotli
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [
+    libsysprof-capture
+  ];
 
   propagatedBuildInputs = [
     glib
     libxml2
   ];
 
-  mesonFlags =
-    [
-      "-Dtls_check=false" # glib-networking is a runtime dependency, not a compile-time dependency
-      "-Dgssapi=disabled"
-      "-Dvapi=${if withIntrospection then "enabled" else "disabled"}"
-      "-Dintrospection=${if withIntrospection then "enabled" else "disabled"}"
-      "-Dgnome=${lib.boolToString gnomeSupport}"
-      "-Dntlm=disabled"
-    ]
-    ++ lib.optionals (!stdenv.hostPlatform.isLinux) [
-      "-Dsysprof=disabled"
-    ];
+  mesonFlags = [
+    "-Dtls_check=false" # glib-networking is a runtime dependency, not a compile-time dependency
+    "-Dgssapi=disabled"
+    "-Dvapi=${if withIntrospection then "enabled" else "disabled"}"
+    "-Dintrospection=${if withIntrospection then "enabled" else "disabled"}"
+    "-Dgnome=${lib.boolToString gnomeSupport}"
+    "-Dntlm=disabled"
+  ]
+  ++ lib.optionals (!stdenv.hostPlatform.isLinux) [
+    "-Dsysprof=disabled"
+  ];
 
   env.NIX_CFLAGS_COMPILE = "-lpthread";
 
@@ -137,7 +134,7 @@ stdenv.mkDerivation rec {
     description = "HTTP client/server library for GNOME";
     homepage = "https://gitlab.gnome.org/GNOME/libsoup";
     license = lib.licenses.lgpl2Plus;
-    inherit (glib.meta) maintainers platforms;
+    inherit (glib.meta) maintainers platforms teams;
     pkgConfigModules = [
       "libsoup-2.4"
       "libsoup-gnome-2.4"

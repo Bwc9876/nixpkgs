@@ -9,6 +9,7 @@
   runtimeShell,
   kubectl,
   nixosTests,
+  nix-update-script,
 
   components ? [
     "cmd/kubelet"
@@ -19,15 +20,15 @@
   ],
 }:
 
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "kubernetes";
-  version = "1.32.1";
+  version = "1.33.3";
 
   src = fetchFromGitHub {
     owner = "kubernetes";
     repo = "kubernetes";
-    rev = "v${version}";
-    hash = "sha256-6KZlbwSMmFvh6XKJR1W/qa3xU0O3fuQaMW/P5An/AtQ=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
   };
 
   vendorHash = null;
@@ -95,15 +96,18 @@ buildGoModule rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
-    description = "Production-Grade Container Scheduling and Management";
-    license = licenses.asl20;
-    homepage = "https://kubernetes.io";
-    maintainers = with maintainers; [ ] ++ teams.kubernetes.members;
-    platforms = platforms.linux;
+  passthru = {
+    updateScript = nix-update-script { };
+    tests = nixosTests.kubernetes // {
+      inherit kubectl;
+    };
   };
 
-  passthru.tests = nixosTests.kubernetes // {
-    inherit kubectl;
+  meta = {
+    description = "Production-Grade Container Scheduling and Management";
+    license = lib.licenses.asl20;
+    homepage = "https://kubernetes.io";
+    teams = [ lib.teams.kubernetes ];
+    platforms = lib.platforms.linux;
   };
-}
+})

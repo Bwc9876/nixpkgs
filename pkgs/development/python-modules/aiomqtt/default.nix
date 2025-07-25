@@ -3,37 +3,29 @@
   anyio,
   buildPythonPackage,
   fetchFromGitHub,
-  paho-mqtt_2,
-  poetry-core,
-  poetry-dynamic-versioning,
+  hatchling,
+  paho-mqtt,
   pytestCheckHook,
   pythonOlder,
-  typing-extensions,
 }:
 
 buildPythonPackage rec {
   pname = "aiomqtt";
-  version = "2.3.0";
+  version = "2.4.0";
   pyproject = true;
 
-  disabled = pythonOlder "3.8";
+  disabled = pythonOlder "3.10";
 
   src = fetchFromGitHub {
     owner = "sbtinstruments";
     repo = "aiomqtt";
     tag = "v${version}";
-    hash = "sha256-a0z4Tv0x25Qd/ZMxUZmtYqrwlD7MugfHdsx+TGfBCYY=";
+    hash = "sha256-b7kCLpJzZGx8YpC0M4O4fqFh3xP73CXFWbKaggD6bOI=";
   };
 
-  build-system = [
-    poetry-core
-    poetry-dynamic-versioning
-  ];
+  build-system = [ hatchling ];
 
-  dependencies = [
-    paho-mqtt_2
-    typing-extensions
-  ];
+  dependencies = [ paho-mqtt ];
 
   nativeCheckInputs = [
     anyio

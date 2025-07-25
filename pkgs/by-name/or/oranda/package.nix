@@ -6,7 +6,6 @@
   tailwindcss,
   oniguruma,
   stdenv,
-  darwin,
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -28,14 +27,9 @@ rustPlatform.buildRustPackage rec {
     tailwindcss
   ];
 
-  buildInputs =
-    [
-      oniguruma
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      darwin.apple_sdk.frameworks.CoreServices
-      darwin.apple_sdk.frameworks.SystemConfiguration
-    ];
+  buildInputs = [
+    oniguruma
+  ];
 
   # requires internet access
   checkFlags = [
@@ -43,15 +37,14 @@ rustPlatform.buildRustPackage rec {
     "--skip=integration"
   ];
 
-  env =
-    {
-      RUSTONIG_SYSTEM_LIBONIG = true;
-      ORANDA_USE_TAILWIND_BINARY = true;
-    }
-    // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
-      # without this, tailwindcss fails with OpenSSL configuration error
-      OPENSSL_CONF = "";
-    };
+  env = {
+    RUSTONIG_SYSTEM_LIBONIG = true;
+    ORANDA_USE_TAILWIND_BINARY = true;
+  }
+  // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+    # without this, tailwindcss fails with OpenSSL configuration error
+    OPENSSL_CONF = "";
+  };
 
   meta = with lib; {
     description = "Generate beautiful landing pages for your developer tools";

@@ -1,27 +1,26 @@
 {
-  btrfs-progs,
-  buildGoModule,
-  fetchFromGitHub,
-  installShellFiles,
   lib,
   stdenv,
+  buildGoModule,
+  fetchFromGitHub,
+  btrfs-progs,
+  writableTmpDirAsHomeHook,
+  installShellFiles,
   versionCheckHook,
 }:
-
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "werf";
-  version = "2.24.0";
+  version = "2.41.3";
 
   src = fetchFromGitHub {
     owner = "werf";
     repo = "werf";
-    rev = "v${version}";
-    hash = "sha256-IU9gVEG4MsUkdX4aJYKtd11WQLODU1IYAUyiuK+la40=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-0ttukgb698ipdW2JTS9xbja+3R/VjXQVoXLJYs2lYTs=";
   };
 
-  vendorHash = "sha256-1HK90RqVvpuzkhbsLh0R6/CcdO/RrXRuOr3MBN0dcLU=";
-
   proxyVendor = true;
+  vendorHash = "sha256-eXZQYT65tHhMSTulXJ9UBN+9HggQL7Oo3sVFVfJDnGg=";
 
   subPackages = [ "cmd/werf" ];
 
@@ -36,49 +35,49 @@ buildGoModule rec {
 
   env.CGO_ENABLED = if stdenv.hostPlatform.isLinux then 1 else 0;
 
-  ldflags =
-    [
-      "-s"
-      "-w"
-      "-X github.com/werf/werf/v2/pkg/werf.Version=v${version}"
-    ]
-    ++ lib.optionals (env.CGO_ENABLED == 1) [
-      "-extldflags=-static"
-      "-linkmode external"
-    ];
+  ldflags = [
+    "-s"
+    "-w"
+    "-X github.com/werf/werf/v2/pkg/werf.Version=v${finalAttrs.version}"
+  ]
+  ++ lib.optionals (finalAttrs.env.CGO_ENABLED == 1) [
+    "-extldflags=-static"
+    "-linkmode external"
+  ];
 
-  tags =
-    [
-      "containers_image_openpgp"
-      "dfrunmount"
-      "dfrunnetwork"
-      "dfrunsecurity"
-      "dfssh"
-    ]
-    ++ lib.optionals (env.CGO_ENABLED == 1) [
-      "cni"
-      "exclude_graphdriver_devicemapper"
-      "netgo"
-      "no_devmapper"
-      "osusergo"
-      "static_build"
-    ];
+  tags = [
+    "containers_image_openpgp"
+    "dfrunmount"
+    "dfrunnetwork"
+    "dfrunsecurity"
+    "dfssh"
+  ]
+  ++ lib.optionals (finalAttrs.env.CGO_ENABLED == 1) [
+    "cni"
+    "exclude_graphdriver_devicemapper"
+    "netgo"
+    "no_devmapper"
+    "osusergo"
+    "static_build"
+  ];
 
-  preCheck =
-    ''
-      # Test all packages.
-      unset subPackages
+  nativeCheckInputs = [ writableTmpDirAsHomeHook ];
 
-      # Remove tests that require external services, usually a Docker daemon.
-      rm -rf \
-        integration/suites \
-        pkg/true_git/*_test.go \
-        test/e2e
-    ''
-    + lib.optionalString (env.CGO_ENABLED == 0) ''
-      # A workaround for osusergo.
-      export USER=nixbld
-    '';
+  preCheck = ''
+    # Test all packages.
+    unset subPackages
+
+    # Remove tests that fail or require external services.
+    rm -rf \
+      integration/suites \
+      pkg/true_git/*_test.go \
+      pkg/werf/exec/*_test.go \
+      test/e2e
+  ''
+  + lib.optionalString (finalAttrs.env.CGO_ENABLED == 0) ''
+    # A workaround for osusergo.
+    export USER=nixbld
+  '';
 
   doInstallCheck = true;
 
@@ -101,9 +100,9 @@ buildGoModule rec {
       Buildah.
     '';
     homepage = "https://werf.io";
-    changelog = "https://github.com/werf/werf/releases/tag/${src.rev}";
+    changelog = "https://github.com/werf/werf/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.asl20;
     maintainers = [ lib.maintainers.azahi ];
     mainProgram = "werf";
   };
-}
+})

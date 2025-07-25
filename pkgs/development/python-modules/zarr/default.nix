@@ -5,71 +5,50 @@
   pythonOlder,
 
   # build-system
-  hatchling,
-  hatch-vcs,
+  setuptools-scm,
 
   # dependencies
   asciitree,
-  donfig,
   numpy,
   fasteners,
   numcodecs,
 
   # tests
-  aiohttp,
-  botocore,
-  fsspec,
-  hypothesis,
-  pytest-asyncio,
   pytestCheckHook,
-  requests,
-  rich,
 }:
 
 buildPythonPackage rec {
   pname = "zarr";
-  version = "3.0.1";
-  format = "pyproject";
+  version = "2.18.7";
+  pyproject = true;
 
   disabled = pythonOlder "3.8";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-AzhZxWA9ycKeU69JTt4ktC8bdh0rtiVGaZCjuKmvt5I=";
+    hash = "sha256-srj2bxTaxK9msYDSM4gZmBuYH3Dhlsmmbmv6qeWVcvU=";
   };
 
   build-system = [
-    hatchling
-    hatch-vcs
+    setuptools-scm
   ];
 
   dependencies = [
     asciitree
-    donfig
     numpy
     fasteners
     numcodecs
-  ] ++ numcodecs.optional-dependencies.crc32c;
+  ]
+  ++ numcodecs.optional-dependencies.msgpack;
 
   nativeCheckInputs = [
-    aiohttp
-    botocore
-    fsspec
-    hypothesis
-    pytest-asyncio
     pytestCheckHook
-    requests
-    rich
-  ];
-
-  disabledTests = [
-    # flaky
-    "test_vindex"
-    "test_zarr_hierarchy"
-    "test_zarr_store"
   ];
 
   pythonImportsCheck = [ "zarr" ];
+
+  # FIXME remove once zarr's reverse dependencies support v3
+  passthru.skipBulkUpdate = true;
 
   meta = {
     description = "Implementation of chunked, compressed, N-dimensional arrays for Python";

@@ -23,17 +23,17 @@
 
 buildPythonPackage rec {
   pname = "certbot";
-  version = "3.1.0";
+  version = "4.0.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "certbot";
     repo = "certbot";
     tag = "v${version}";
-    hash = "sha256-lYGJgUNDzX+bE64GJ+djdKR+DXmhpcNbFJrAEnP86yQ=";
+    hash = "sha256-GS4JLLXrX4+BQ4S6ySbOHUaUthCFYTCHWnOaMpfnIj8=";
   };
 
-  postPatch = "cd ${pname}"; # using sourceRoot would interfere with patches
+  postPatch = "cd certbot"; # using sourceRoot would interfere with patches
 
   build-system = [ setuptools ];
 
@@ -61,10 +61,9 @@ buildPythonPackage rec {
     pytest-xdist
   ];
 
-  pytestFlagsArray = [
-    "-p no:cacheprovider"
-    "-W"
-    "ignore::DeprecationWarning"
+  pytestFlags = [
+    "-pno:cacheprovider"
+    "-Wignore::DeprecationWarning"
   ];
 
   makeWrapperArgs = [ "--prefix PATH : ${dialog}/bin" ];
@@ -89,7 +88,7 @@ buildPythonPackage rec {
     description = "ACME client that can obtain certs and extensibly update server configurations";
     platforms = platforms.unix;
     mainProgram = "certbot";
-    maintainers = with maintainers; [ domenkozar ];
+    maintainers = with maintainers; [ ];
     license = with licenses; [ asl20 ];
   };
 }

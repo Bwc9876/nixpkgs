@@ -8,25 +8,27 @@
 
 let
   pname = "hoppscotch";
-  version = "24.12.0-0";
+  version = "25.6.1-0";
 
   src =
     fetchurl
       {
         aarch64-darwin = {
           url = "https://github.com/hoppscotch/releases/releases/download/v${version}/Hoppscotch_mac_aarch64.dmg";
-          hash = "sha256-pM9s5rRb/VswJECK44Ku2rSa4a7kpKhJM9t6uR/6B9A=";
+          hash = "sha256-pQAG8jRObTaYOBKgHRydq1ilO7O5nweZSoT70wdcUfA=";
         };
         x86_64-darwin = {
           url = "https://github.com/hoppscotch/releases/releases/download/v${version}/Hoppscotch_mac_x64.dmg";
-          hash = "sha256-vXZSeogWBJt7ev0bmWB5MWYcePgq1noG3djU8kjZumQ=";
+          hash = "sha256-pRaBphPcWfCgYE03kth4EeFI4mroSHg4r1mmwQDKhLg=";
         };
         x86_64-linux = {
           url = "https://github.com/hoppscotch/releases/releases/download/v${version}/Hoppscotch_linux_x64.AppImage";
-          hash = "sha256-iwSqGcaQqFawGhT4vWKQp63ZoHGjssNYJ3ByvKJacU0=";
+          hash = "sha256-dwjHUBZs9XQMmTfxUrbqgb/7lm+xPTeVO+VCX9wBFK8=";
         };
       }
-      .${stdenv.system} or (throw "Unsupported system: ${stdenv.system}");
+      .${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
+
+  passthru.updateScript = ./update.sh;
 
   meta = {
     description = "Open source API development ecosystem";
@@ -56,6 +58,7 @@ if stdenv.hostPlatform.isDarwin then
       pname
       version
       src
+      passthru
       meta
       ;
 
@@ -78,6 +81,7 @@ else
       pname
       version
       src
+      passthru
       meta
       ;
 
@@ -87,7 +91,9 @@ else
       in
       ''
         # Install .desktop files
-        install -Dm444 ${appimageContents}/hoppscotch.desktop -t $out/share/applications
-        install -Dm444 ${appimageContents}/hoppscotch.png -t $out/share/pixmaps
+        install -Dm444 ${appimageContents}/Hoppscotch.desktop $out/share/applications/hoppscotch.desktop
+        install -Dm444 ${appimageContents}/Hoppscotch.png $out/share/pixmaps/hoppscotch.png
+        substituteInPlace $out/share/applications/hoppscotch.desktop \
+          --replace-fail "hoppscotch-desktop" "hoppscotch"
       '';
   }

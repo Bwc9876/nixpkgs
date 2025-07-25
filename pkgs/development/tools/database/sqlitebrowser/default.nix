@@ -30,7 +30,8 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = [
     qtbase
     sqlcipher
-  ] ++ lib.optional stdenv.hostPlatform.isDarwin qtmacextras;
+  ]
+  ++ lib.optional stdenv.hostPlatform.isDarwin qtmacextras;
 
   nativeBuildInputs = [
     cmake
@@ -40,7 +41,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   cmakeFlags = [
     "-Dsqlcipher=1"
-    (lib.cmakeBool "ENABLE_TESTING" (finalAttrs.doCheck or false))
+    (lib.cmakeBool "ENABLE_TESTING" (finalAttrs.finalPackage.doCheck or false))
   ];
 
   doCheck = true;

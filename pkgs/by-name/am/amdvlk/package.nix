@@ -27,49 +27,47 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "amdvlk";
-  version = "2024.Q4.3";
+  version = "2025.Q1.3";
 
   src = fetchRepoProject {
     name = "amdvlk-src";
     manifest = "https://github.com/GPUOpen-Drivers/AMDVLK.git";
     rev = "refs/tags/v-${finalAttrs.version}";
-    hash = "sha256-PQxTRCSOk8E6y7pXyqxt1QKtRsqnrj/9dQZ8NjnUbhA=";
+    hash = "sha256-ZXou5g0emeK++NyV/hQllZAdZAMEY9TYs9c+umFdcfo=";
   };
 
-  buildInputs =
-    [
-      expat
-      libdrm
-      ncurses
-      openssl
-      wayland
-      zlib
-    ]
-    ++ (with xorg; [
-      libX11
-      libxcb
-      xcbproto
-      libXext
-      libXrandr
-      libXft
-      libxshmfence
-    ]);
+  buildInputs = [
+    expat
+    libdrm
+    ncurses
+    openssl
+    wayland
+    zlib
+  ]
+  ++ (with xorg; [
+    libX11
+    libxcb
+    xcbproto
+    libXext
+    libXrandr
+    libXft
+    libxshmfence
+  ]);
 
-  nativeBuildInputs =
-    [
-      cmake
-      directx-shader-compiler
-      glslang
-      ninja
-      patchelf
-      perl
-      pkg-config
-      python3
-    ]
-    ++ (with python3.pkgs; [
-      jinja2
-      ruamel-yaml
-    ]);
+  nativeBuildInputs = [
+    cmake
+    directx-shader-compiler
+    glslang
+    ninja
+    patchelf
+    perl
+    pkg-config
+    python3
+  ]
+  ++ (with python3.pkgs; [
+    jinja2
+    ruamel-yaml
+  ]);
 
   rpath = lib.makeLibraryPath (
     [

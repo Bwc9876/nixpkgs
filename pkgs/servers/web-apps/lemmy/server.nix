@@ -6,8 +6,6 @@
   openssl,
   libpq,
   libiconv,
-  Security,
-  SystemConfiguration,
   protobuf,
   rustfmt,
   nixosTests,
@@ -35,13 +33,12 @@ rustPlatform.buildRustPackage rec {
   useFetchCargoVendor = true;
   cargoHash = pinData.serverCargoHash;
 
-  buildInputs =
-    [ libpq ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      libiconv
-      Security
-      SystemConfiguration
-    ];
+  buildInputs = [
+    libpq
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    libiconv
+  ];
 
   # Using OPENSSL_NO_VENDOR is not an option on darwin
   # As of version 0.10.35 rust-openssl looks for openssl on darwin

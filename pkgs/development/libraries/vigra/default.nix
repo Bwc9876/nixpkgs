@@ -28,6 +28,12 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-ZmHj1BSyoMBCuxI5hrRiBEb5pDUsGzis+T5FSX27UN8=";
   };
 
+  patches = [
+    # Patches to fix compiling on LLVM 19 from https://github.com/ukoethe/vigra/pull/592
+    ./fix-llvm-19-1.patch
+    ./fix-llvm-19-2.patch
+  ];
+
   nativeBuildInputs = [ cmake ];
   buildInputs = [
     boost
@@ -46,15 +52,14 @@ stdenv.mkDerivation (finalAttrs: {
     patchShebangs --build config/run_test.sh.in
   '';
 
-  cmakeFlags =
-    [
-      "-DWITH_OPENEXR=1"
-      "-DVIGRANUMPY_INSTALL_DIR=${placeholder "out"}/${python.sitePackages}"
-    ]
-    ++ lib.optionals (stdenv.hostPlatform.system == "x86_64-linux") [
-      "-DCMAKE_CXX_FLAGS=-fPIC"
-      "-DCMAKE_C_FLAGS=-fPIC"
-    ];
+  cmakeFlags = [
+    "-DWITH_OPENEXR=1"
+    "-DVIGRANUMPY_INSTALL_DIR=${placeholder "out"}/${python.sitePackages}"
+  ]
+  ++ lib.optionals (stdenv.hostPlatform.system == "x86_64-linux") [
+    "-DCMAKE_CXX_FLAGS=-fPIC"
+    "-DCMAKE_C_FLAGS=-fPIC"
+  ];
 
   enableParallelBuilding = true;
 

@@ -1,58 +1,71 @@
 {
   lib,
-  mkYarnPackage,
   fetchFromGitHub,
-  fetchYarnDeps,
   makeWrapper,
-  nodejs,
+  nix-update-script,
+  nodePackages,
+  stdenv,
   xsel,
+  yarn-berry_4,
 }:
-
-mkYarnPackage rec {
+let
+  yarn-berry = yarn-berry_4;
+in
+stdenv.mkDerivation (finalAttrs: {
   pname = "dokieli";
-  version = "0-unstable-2024-09-23";
+  version = "0-unstable-2025-07-11";
 
   src = fetchFromGitHub {
-    owner = "linkeddata";
+    owner = "dokieli";
     repo = "dokieli";
-    rev = "40ebbc60ba48d8b08f763b07befba96382c5f027";
-    hash = "sha256-lc96jOR8uXLcZFhN3wpSd9O5cUdKxllB8WWCh2oWuEw=";
+    rev = "13c0c2d2d307ab1f391aca9aec4efc4ac4ba43c5";
+    hash = "sha256-V9tKoSu1r8LZaIZUu1JSyZ0dM7/zblTDQZHu86/V3LE=";
   };
 
-  offlineCache = fetchYarnDeps {
-    yarnLock = src + "/yarn.lock";
-    hash = "sha256-TEXCCLFhpwHZJ8zRGsC7J6EwNaFpIi+CZ3L5uilebK4=";
+  missingHashes = ./missing-hashes.json;
+  offlineCache = yarn-berry.fetchYarnBerryDeps {
+    inherit (finalAttrs) src missingHashes;
+    hash = "sha256-4SK1ecjEnnaow5Z2biCPaHirpX6J/5cytQWWicPgmB0=";
   };
-
-  packageJSON = ./package.json;
 
   installPhase = ''
+    runHook preInstall
+
     mkdir -p $out/bin
     cp -r * $out
+
+    runHook postInstall
   '';
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [
+    makeWrapper
+    yarn-berry.yarnBerryConfigHook
+  ];
 
-  postFixup = ''
-    makeWrapper ${nodejs}/bin/npx $out/bin/dokieli           \
-      --prefix PATH : ${
-        lib.makeBinPath ([
-          nodejs
-          xsel
-        ])
-      }   \
-      --add-flags serve                                      \
-      --chdir $out/deps/dokieli
-  '';
+  postFixup =
+    let
+      serve = lib.getExe' nodePackages.serve "serve";
+    in
+    ''
+      makeWrapper ${serve} $out/bin/dokieli \
+        --prefix PATH : ${lib.makeBinPath [ xsel ]} \
+        --chdir $out
+    '';
 
-  doDist = false;
+  passthru.updateScript = nix-update-script {
+    extraArgs = [ "--version=branch" ];
+  };
 
   meta = {
-    description = "dokieli is a clientside editor for decentralised article publishing, annotations and social interactions";
+    description = "Clientside editor for decentralised article publishing, annotations and social interactions";
     homepage = "https://github.com/linkeddata/dokieli";
-    license = lib.licenses.mit;
+    license = with lib.licenses; [
+      cc-by-40
+      mit
+    ];
     platforms = lib.platforms.all;
     maintainers = with lib.maintainers; [ shogo ];
+    teams = [ lib.teams.ngi ];
     mainProgram = "dokieli";
   };
-}
+})

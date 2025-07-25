@@ -21,7 +21,7 @@
   libyaml,
   pcre2,
   rpm,
-  sdbus-cpp,
+  sdbus-cpp_2,
   sphinx,
   sqlite,
   systemd,
@@ -33,7 +33,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "dnf5";
-  version = "5.2.9.0";
+  version = "5.2.15.0";
 
   outputs = [
     "out"
@@ -43,25 +43,24 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "rpm-software-management";
     repo = "dnf5";
-    rev = finalAttrs.version;
-    hash = "sha256-TkWFSxbxsRRRMDkTKlaOnKC0VLmcV0LuZmmnvqtywaw=";
+    tag = finalAttrs.version;
+    hash = "sha256-WlQfvWDd9Eay9TPq2EfFlQGljEskJqL3xyNIJDdaNps=";
   };
 
-  nativeBuildInputs =
-    [
-      cmake
-      createrepo_c
-      doxygen
-      gettext
-      help2man
-      pkg-config
-      sphinx
-    ]
-    ++ (with python3Packages; [
-      breathe
-      sphinx-autoapi
-      sphinx-rtd-theme
-    ]);
+  nativeBuildInputs = [
+    cmake
+    createrepo_c
+    doxygen
+    gettext
+    help2man
+    pkg-config
+    sphinx
+  ]
+  ++ (with python3Packages; [
+    breathe
+    sphinx-autoapi
+    sphinx-rtd-theme
+  ]);
 
   buildInputs = [
     appstream
@@ -76,7 +75,7 @@ stdenv.mkDerivation (finalAttrs: {
     libyaml
     pcre2.dev
     rpm
-    sdbus-cpp
+    sdbus-cpp_2
     sqlite
     systemd
     toml11

@@ -187,6 +187,16 @@ in
         off if you want to configure it manually.
       '';
     };
+
+    prosody.allowners_muc = mkOption {
+      type = bool;
+      default = false;
+      description = ''
+        Add module allowners, any user in chat is able to
+        kick other. Usefull in jitsi-meet to kick ghosts.
+      '';
+    };
+
     prosody.lockdown = mkOption {
       type = bool;
       default = false;
@@ -240,6 +250,7 @@ in
         {
           domain = "conference.${cfg.hostName}";
           name = "Jitsi Meet MUC";
+          allowners_muc = cfg.prosody.allowners_muc;
           roomLocking = false;
           roomDefaultPublicJids = true;
           extraConfig = ''
@@ -434,13 +445,12 @@ in
 
     systemd.services.jitsi-meet-init-secrets = {
       wantedBy = [ "multi-user.target" ];
-      before =
-        [
-          "jicofo.service"
-          "jitsi-videobridge2.service"
-        ]
-        ++ (optional cfg.prosody.enable "prosody.service")
-        ++ (optional cfg.jigasi.enable "jigasi.service");
+      before = [
+        "jicofo.service"
+        "jitsi-videobridge2.service"
+      ]
+      ++ (optional cfg.prosody.enable "prosody.service")
+      ++ (optional cfg.jigasi.enable "jigasi.service");
       serviceConfig = {
         Type = "oneshot";
         UMask = "027";
@@ -451,18 +461,17 @@ in
 
       script =
         let
-          secrets =
-            [
-              "jicofo-component-secret"
-              "jicofo-user-secret"
-              "jibri-auth-secret"
-              "jibri-recorder-secret"
-            ]
-            ++ (optionals cfg.jigasi.enable [
-              "jigasi-user-secret"
-              "jigasi-component-secret"
-            ])
-            ++ (optional (cfg.videobridge.passwordFile == null) "videobridge-secret");
+          secrets = [
+            "jicofo-component-secret"
+            "jicofo-user-secret"
+            "jibri-auth-secret"
+            "jibri-recorder-secret"
+          ]
+          ++ (optionals cfg.jigasi.enable [
+            "jigasi-user-secret"
+            "jigasi-component-secret"
+          ])
+          ++ (optional (cfg.videobridge.passwordFile == null) "videobridge-secret");
         in
         ''
           ${concatMapStringsSep "\n" (s: ''

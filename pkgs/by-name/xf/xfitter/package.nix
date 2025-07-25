@@ -21,7 +21,7 @@
   zlib,
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "xfitter";
   version = "2.2.0";
 
@@ -43,25 +43,22 @@ stdenv.mkDerivation rec {
     gfortran
     pkg-config
   ];
-  buildInputs =
-    [
-      apfel
-      blas
-      ceres-solver
-      lhapdf
-      lapack
-      libyaml
-      root
-      qcdnum
-      gsl
-      yaml-cpp
-      zlib
-    ]
-    ++ lib.optionals ("5" == lib.versions.major root.version) [
-      apfelgrid
-      applgrid
-    ]
-    ++ lib.optional (stdenv.hostPlatform.libc == "glibc") libtirpc;
+  buildInputs = [
+    apfel
+    apfelgrid
+    applgrid
+    blas
+    ceres-solver
+    lhapdf
+    lapack
+    libyaml
+    root
+    qcdnum
+    gsl
+    yaml-cpp
+    zlib
+  ]
+  ++ lib.optional (stdenv.hostPlatform.libc == "glibc") libtirpc;
 
   env.NIX_CFLAGS_COMPILE = lib.optionalString (
     stdenv.hostPlatform.libc == "glibc"

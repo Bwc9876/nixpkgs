@@ -4,9 +4,8 @@
   callPackage,
   fetchFromGitHub,
   fetchPypi,
-  fetchpatch2,
   python313,
-  substituteAll,
+  replaceVars,
   ffmpeg-headless,
   inetutils,
   nixosTests,
@@ -88,6 +87,46 @@ let
         ];
       });
 
+      async-timeout = super.async-timeout.overridePythonAttrs (oldAttrs: rec {
+        version = "4.0.3";
+        src = fetchFromGitHub {
+          owner = "aio-libs";
+          repo = "async-timeout";
+          tag = "v${version}";
+          hash = "sha256-gJGVRm7YMWnVicz2juHKW8kjJBxn4/vQ/kc2kQyl1i4=";
+        };
+      });
+
+      av = super.av.overridePythonAttrs (rec {
+        version = "13.1.0";
+        src = fetchFromGitHub {
+          owner = "PyAV-Org";
+          repo = "PyAV";
+          tag = "v${version}";
+          hash = "sha256-x2a9SC4uRplC6p0cD7fZcepFpRidbr6JJEEOaGSWl60=";
+        };
+      });
+
+      brother = super.brother.overridePythonAttrs (rec {
+        version = "4.3.1";
+        src = fetchFromGitHub {
+          owner = "bieniu";
+          repo = "brother";
+          tag = version;
+          hash = "sha256-fWa5FNBGV8tnJ3CozMicXLGsDvnTjNzU8PdV266MeeQ=";
+        };
+      });
+
+      google-genai = super.google-genai.overridePythonAttrs (old: rec {
+        version = "1.7.0";
+        src = fetchFromGitHub {
+          owner = "googleapis";
+          repo = "python-genai";
+          tag = "v${version}";
+          hash = "sha256-vmrFPE7H9s9varrP0s6WK4opoU1hREH7rVVjrKiXY5E=";
+        };
+      });
+
       gspread = super.gspread.overridePythonAttrs (oldAttrs: rec {
         version = "5.12.4";
         src = fetchFromGitHub {
@@ -101,22 +140,12 @@ let
         ];
       });
 
-      openhomedevice = super.openhomedevice.overridePythonAttrs (oldAttrs: rec {
-        version = "2.2";
+      mcp = super.mcp.overridePythonAttrs (oldAttrs: rec {
+        version = "1.5.0";
         src = fetchFromGitHub {
           inherit (oldAttrs.src) owner repo;
-          rev = "refs/tags/${version}";
-          hash = "sha256-GGp7nKFH01m1KW6yMkKlAdd26bDi8JDWva6OQ0CWMIw=";
-        };
-      });
-
-      pymelcloud = super.pymelcloud.overridePythonAttrs (oldAttrs: {
-        version = "2.5.9";
-        src = fetchFromGitHub {
-          owner = "vilppuvuorinen";
-          repo = "pymelcloud";
-          rev = "33a827b6cd0b34f276790faa49bfd0994bb7c2e4"; # 2.5.x branch
-          sha256 = "sha256-Q3FIo9YJwtWPHfukEBjBANUQ1N1vr/DMnl1dgiN7vYg=";
+          tag = "v${version}";
+          hash = "sha256-Z2NN6k4mD6NixDON1MUOELpBZW9JvMvFErcCbFPdg2o=";
         };
       });
 
@@ -140,6 +169,25 @@ let
         ];
 
         doCheck = false; # no tests
+      });
+
+      openhomedevice = super.openhomedevice.overridePythonAttrs (oldAttrs: rec {
+        version = "2.2";
+        src = fetchFromGitHub {
+          inherit (oldAttrs.src) owner repo;
+          rev = "refs/tags/${version}";
+          hash = "sha256-GGp7nKFH01m1KW6yMkKlAdd26bDi8JDWva6OQ0CWMIw=";
+        };
+      });
+
+      plexapi = super.plexapi.overrideAttrs (oldAttrs: rec {
+        version = "4.15.16";
+        src = fetchFromGitHub {
+          owner = "pkkid";
+          repo = "python-plexapi";
+          tag = version;
+          hash = "sha256-NwGGNN6LC3gvE8zoVL5meNWMbqZjJ+6PcU2ebJTfJmU=";
+        };
       });
 
       # Pinned due to API changes in 0.1.0
@@ -255,31 +303,6 @@ let
         doCheck = false;
       });
 
-      slack-sdk = super.slack-sdk.overridePythonAttrs (oldAttrs: rec {
-        version = "2.5.0";
-        src = fetchFromGitHub {
-          owner = "slackapi";
-          repo = "python-slackclient";
-          rev = "refs/tags/${version}";
-          hash = "sha256-U//HUe6e41wOOzoaDl4yXPnEASCzpGBIScHStWMN8tk=";
-        };
-        postPatch = ''
-          substituteInPlace setup.py \
-            --replace-fail "pytest-runner" ""
-        '';
-        pythonImportsCheck = [ "slack" ];
-        doCheck = false; # Tests changed a lot for > 3
-      });
-
-      vulcan-api = super.vulcan-api.overridePythonAttrs (oldAttrs: rec {
-        version = "2.3.2";
-        src = fetchFromGitHub {
-          inherit (oldAttrs.src) owner repo;
-          rev = "refs/tags/v${version}";
-          hash = "sha256-ebWKcRxAAkHVqV2RaftIHBRJe/TYSUxS+5Utxb0yhtw=";
-        };
-      });
-
       # Pinned due to API changes ~1.0
       vultr = super.vultr.overridePythonAttrs (oldAttrs: rec {
         version = "0.1.2";
@@ -291,7 +314,18 @@ let
         };
       });
 
+      wolf-comm = super.wolf-comm.overridePythonAttrs (rec {
+        version = "0.0.23";
+        src = fetchFromGitHub {
+          owner = "janrothkegel";
+          repo = "wolf-comm";
+          tag = version;
+          hash = "sha256-LpehooW3vmohiyMwOQTFNLiNCsaLKelWQxQk8bl+y1k=";
+        };
+      });
+
       # internal python packages only consumed by home-assistant itself
+      hass-web-proxy-lib = self.callPackage ./python-modules/hass-web-proxy-lib { };
       home-assistant-frontend = self.callPackage ./frontend.nix { };
       home-assistant-intents = self.callPackage ./intents.nix { };
       homeassistant = self.toPythonModule home-assistant;
@@ -320,7 +354,7 @@ let
   extraBuildInputs = extraPackages python.pkgs;
 
   # Don't forget to run update-component-packages.py after updating
-  hassVersion = "2025.1.4";
+  hassVersion = "2025.7.3";
 
 in
 python.pkgs.buildPythonApplication rec {
@@ -331,7 +365,7 @@ python.pkgs.buildPythonApplication rec {
   pyproject = true;
 
   # check REQUIRED_PYTHON_VER in homeassistant/const.py
-  disabled = python.pythonOlder "3.11";
+  disabled = python.pythonOlder "3.13";
 
   # don't try and fail to strip 6600+ python files, it takes minutes!
   dontStrip = true;
@@ -340,45 +374,21 @@ python.pkgs.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "home-assistant";
     repo = "core";
-    rev = "refs/tags/${version}";
-    hash = "sha256-QqWF/uvFQbf0tdJMzFV3hAt9Je5sFR5z+aAPtCxycbM=";
+    tag = version;
+    hash = "sha256-FT77obtb081QOgw+nqbQvvW+3x/L2WUr3DLT8X1Wpwg=";
   };
 
   # Secondary source is pypi sdist for translations
   sdist = fetchPypi {
     inherit pname version;
-    hash = "sha256-yzX4Wgo468On/WuK32Xdl0O3en/WFRdykvfvHNEU1S0=";
+    hash = "sha256-jO+rNIzEvtQ1vhSD1Xbq/SKV5XvBOb4MmkkczoeD1Kc=";
   };
 
   build-system = with python.pkgs; [
     setuptools
   ];
 
-  pythonRelaxDeps = [
-    "aiohttp"
-    "attrs"
-    "bcrypt"
-    "ciso8601"
-    "cryptography"
-    "fnv-hash-fast"
-    "hass-nabucasa"
-    "httpx"
-    "jinja2"
-    "orjson"
-    "pillow"
-    "pyjwt"
-    "pyopenssl"
-    "pyyaml"
-    "requests"
-    "securetar"
-    "sqlalchemy"
-    "typing-extensions"
-    "ulid-transform"
-    "urllib3"
-    "uv"
-    "voluptuous-openapi"
-    "yarl"
-  ];
+  pythonRelaxDeps = true;
 
   # extract translations from pypi sdist
   prePatch = ''
@@ -390,33 +400,33 @@ python.pkgs.buildPythonApplication rec {
     # Follow symlinks in /var/lib/hass/www
     ./patches/static-follow-symlinks.patch
 
-    # Patch path to ffmpeg binary
-    (substituteAll {
-      src = ./patches/ffmpeg-path.patch;
-      ffmpeg = "${lib.getExe ffmpeg-headless}";
-    })
+    # Copy default blueprints without preserving permissions
+    ./patches/default-blueprint-permissions.patch
 
-    (fetchpatch2 {
-      # python-matter-server 7.0 compat
-      url = "https://github.com/home-assistant/core/commit/ea4931ca3a91920b66a747a18a2dece2c8215d4f.patch";
-      hash = "sha256-evfMdBdEYsVSu2iDZ5xgNTg/QljJ+MXrV69g9liNcN4=";
+    # Patch path to ffmpeg binary
+    (replaceVars ./patches/ffmpeg-path.patch {
+      ffmpeg = "${lib.getExe ffmpeg-headless}";
     })
   ];
 
   postPatch = ''
     substituteInPlace tests/test_core_config.py --replace-fail '"/usr"' "\"$NIX_BUILD_TOP/media\""
 
-    sed -i 's/setuptools[~=]/setuptools>/' pyproject.toml
+    substituteInPlace pyproject.toml \
+      --replace-fail "setuptools==78.1.1" setuptools
   '';
 
   dependencies = with python.pkgs; [
     # Only packages required in pyproject.toml
     aiodns
+    aiofiles
     aiohasupervisor
     aiohttp
+    aiohttp-asyncmdnsresolver
     aiohttp-cors
     aiohttp-fast-zlib
     aiozoneinfo
+    annotatedyaml
     astral
     async-interrupt
     atomicwrites-homeassistant
@@ -429,20 +439,28 @@ python.pkgs.buildPythonApplication rec {
     cronsim
     cryptography
     fnv-hash-fast
+    ha-ffmpeg
     hass-nabucasa
+    hassil
     home-assistant-bluetooth
+    home-assistant-intents
     httpx
     ifaddr
     jinja2
     lru-dict
+    mutagen
+    numpy
     orjson
     packaging
     pillow
     propcache
     psutil-home-assistant
     pyjwt
+    pymicro-vad
     pyopenssl
+    pyspeex-noise
     python-slugify
+    pyturbojpeg
     pyyaml
     requests
     securetar
@@ -456,7 +474,9 @@ python.pkgs.buildPythonApplication rec {
     voluptuous
     voluptuous-openapi
     voluptuous-serialize
+    webrtc-models
     yarl
+    zeroconf
     # REQUIREMENTS in homeassistant/auth/mfa_modules/totp.py and homeassistant/auth/mfa_modules/notify.py
     pyotp
     pyqrcode
@@ -476,7 +496,6 @@ python.pkgs.buildPythonApplication rec {
       pytest-aiohttp
       pytest-freezer
       pytest-mock
-      pytest-rerunfailures
       pytest-socket
       pytest-timeout
       pytest-unordered
@@ -495,34 +514,17 @@ python.pkgs.buildPythonApplication rec {
       # some components are needed even if tests in tests/components are disabled
       "default_config"
       "hue"
+      "qwikswitch"
     ];
 
   pytestFlagsArray = [
     # assign tests grouped by file to workers
     "--dist loadfile"
-    # retry racy tests that end in "RuntimeError: Event loop is closed"
-    "--reruns 3"
-    "--only-rerun RuntimeError"
     # enable full variable printing on error
     "--showlocals"
-    # AssertionError: assert 1 == 0
-    "--deselect tests/test_config.py::test_merge"
-    # AssertionError: assert 6 == 5
-    "--deselect=tests/helpers/test_translation.py::test_caching"
-    # assert "Detected that integration 'hue' attempted to create an asyncio task from a thread at homeassistant/components/hue/light.py, line 23
-    "--deselect=tests/util/test_async.py::test_create_eager_task_from_thread_in_integration"
-    # Services were renamed to Actions in language strings, but the tests are lagging behind
-    "--deselect=tests/test_core.py::test_serviceregistry_service_that_not_exists"
-    "--deselect=tests/test_core.py::test_services_call_return_response_requires_blocking"
-    "--deselect=tests/test_core.py::test_serviceregistry_return_response_arguments"
-    "--deselect=tests/helpers/test_script.py::test_parallel_error"
-    "--deselect=tests/helpers/test_script.py::test_propagate_error_service_not_found"
-    "--deselect=tests/helpers/test_script.py::test_continue_on_error_automation_issue"
-    # checks whether pip is installed
-    "--deselect=tests/util/test_package.py::test_check_package_fragment"
-    # tests are located in tests/
-    "tests"
   ];
+
+  enabledTestPaths = [ "tests" ];
 
   disabledTestPaths = [
     # we neither run nor distribute hassfest
@@ -533,6 +535,18 @@ python.pkgs.buildPythonApplication rec {
     "tests/test_circular_imports.py"
     # don't bulk test all components
     "tests/components"
+    # AssertionError: assert 1 == 0
+    "tests/test_config.py::test_merge"
+    # checks whether pip is installed
+    "tests/util/test_package.py::test_check_package_fragment"
+    # flaky
+    "tests/test_bootstrap.py::test_setup_hass_takes_longer_than_log_slow_startup"
+    "tests/test_test_fixtures.py::test_evict_faked_translations"
+    "tests/helpers/test_backup.py::test_async_get_manager"
+    # (2025.7.0) Fails to find name of tracked time interval in scheduled jobs
+    "tests/helpers/test_event.py::test_track_time_interval_name"
+    # (2025.7.2) Exception string mismatch (non-blocking vs non blocking)
+    "tests/test_core.py::test_services_call_return_response_requires_blocking"
   ];
 
   preCheck = ''
@@ -572,9 +586,10 @@ python.pkgs.buildPythonApplication rec {
 
   meta = with lib; {
     homepage = "https://home-assistant.io/";
+    changelog = "https://github.com/home-assistant/core/releases/tag/${src.tag}";
     description = "Open source home automation that puts local control and privacy first";
     license = licenses.asl20;
-    maintainers = teams.home-assistant.members;
+    teams = [ teams.home-assistant ];
     platforms = platforms.linux;
     mainProgram = "hass";
   };

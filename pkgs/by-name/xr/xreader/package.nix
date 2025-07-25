@@ -36,13 +36,13 @@
 
 stdenv.mkDerivation rec {
   pname = "xreader";
-  version = "4.2.3";
+  version = "4.2.7";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
-    repo = pname;
+    repo = "xreader";
     rev = version;
-    hash = "sha256-qBnnxygkAn1wF3gtqR0At1e1e+sx1/2MoSWqmshW5Qg=";
+    hash = "sha256-APBVrrvLS5CFtfi0UlIDtYyg4pfCS8qLc2a4KDOU1Zk=";
   };
 
   nativeBuildInputs = [
@@ -57,7 +57,9 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dmathjax-directory=${nodePackages.mathjax}"
-  ] ++ (map (x: "-D${x}=true") backends);
+    "-Dintrospection=true"
+  ]
+  ++ (map (x: "-D${x}=true") backends);
 
   buildInputs = [
     glib
@@ -81,6 +83,6 @@ document formats like PDF and Postscript";
     homepage = "https://github.com/linuxmint/xreader";
     license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.cinnamon.members;
+    teams = [ teams.cinnamon ];
   };
 }

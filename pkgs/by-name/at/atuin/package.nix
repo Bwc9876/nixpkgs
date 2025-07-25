@@ -5,23 +5,22 @@
   installShellFiles,
   rustPlatform,
   nixosTests,
-  jq,
-  moreutils,
+  nix-update-script,
 }:
 
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage (finalAttrs: {
   pname = "atuin";
-  version = "18.4.0";
+  version = "18.7.1";
 
   src = fetchFromGitHub {
     owner = "atuinsh";
     repo = "atuin";
-    rev = "v${version}";
-    hash = "sha256-P/q4XYhpXo9kwiltA0F+rQNSlqI+s8TSi5v5lFJWJ/4=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-KHATm505ysJAIGCd2UvkMEIFhp7huPYW5ly+jq1HLdc=";
   };
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-0KswWFy44ViPHlMCmwgVlDe7diDjLmVUk2517BEMTtk=";
+  cargoHash = "sha256-ZzMNU3FqD4bD96gEXaTphuM7MqRBBSYZTxIJSNtw+EI=";
 
   # atuin's default features include 'check-updates', which do not make sense
   # for distribution builds. List all other default features.
@@ -43,8 +42,11 @@ rustPlatform.buildRustPackage rec {
       --zsh <($out/bin/atuin gen-completions -s zsh)
   '';
 
-  passthru.tests = {
-    inherit (nixosTests) atuin;
+  passthru = {
+    tests = {
+      inherit (nixosTests) atuin;
+    };
+    updateScript = nix-update-script { };
   };
 
   checkFlags = [
@@ -68,7 +70,8 @@ rustPlatform.buildRustPackage rec {
       SuperSandro2000
       sciencentistguy
       _0x4A6F
+      rvdp
     ];
     mainProgram = "atuin";
   };
-}
+})

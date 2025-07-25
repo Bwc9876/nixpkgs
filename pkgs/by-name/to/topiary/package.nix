@@ -41,7 +41,7 @@ rustPlatform.buildRustPackage rec {
   ];
   cargoTestFlags = cargoBuildFlags;
 
-  # Skip tests that cannot be executed in sandbox (operation not permited)
+  # Skip tests that cannot be executed in sandbox (operation not permitted)
   checkFlags = [
     "--skip=test_fmt_dir"
     "--skip=test_fmt_files"
@@ -58,19 +58,18 @@ rustPlatform.buildRustPackage rec {
 
   env.TOPIARY_LANGUAGE_DIR = "${placeholder "out"}/share/queries";
 
-  postInstall =
-    ''
-      install -Dm444 topiary-queries/queries/* -t $out/share/queries
-    ''
-    + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
-      installShellCompletion --cmd topiary \
-        --bash <($out/bin/topiary completion bash) \
-        --fish <($out/bin/topiary completion fish) \
-        --zsh <($out/bin/topiary completion zsh)
-    '';
+  postInstall = ''
+    install -Dm444 topiary-queries/queries/* -t $out/share/queries
+  ''
+  + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    installShellCompletion --cmd topiary \
+      --bash <($out/bin/topiary completion bash) \
+      --fish <($out/bin/topiary completion fish) \
+      --zsh <($out/bin/topiary completion zsh)
+  '';
 
   doInstallCheck = true;
-  versionCheckProgramArg = [ "--version" ];
+  versionCheckProgramArg = "--version";
 
   passthru.updateScript = nix-update-script { };
 

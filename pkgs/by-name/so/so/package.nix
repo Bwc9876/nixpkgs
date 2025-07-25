@@ -1,6 +1,5 @@
 {
   lib,
-  darwin,
   fetchFromGitHub,
   libiconv,
   openssl,
@@ -11,7 +10,6 @@
 }:
 
 let
-  inherit (darwin.apple_sdk.frameworks) CoreServices Security SystemConfiguration;
   self = rustPlatform.buildRustPackage {
     pname = "so";
     version = "0.4.10";
@@ -30,14 +28,12 @@ let
 
     nativeBuildInputs = [ pkg-config ];
 
-    buildInputs =
-      [ openssl ]
-      ++ lib.optionals stdenv.hostPlatform.isDarwin [
-        libiconv
-        CoreServices
-        Security
-        SystemConfiguration
-      ];
+    buildInputs = [
+      openssl
+    ]
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
+      libiconv
+    ];
 
     strictDeps = true;
 

@@ -1,52 +1,58 @@
 {
   lib,
   buildPythonPackage,
-  pythonOlder,
   fetchFromGitHub,
-  pytestCheckHook,
+
+  # build-system
+  setuptools,
+  setuptools-scm,
+
+  # dependencies
   aiohttp,
   dask,
-  distributed,
   fsspec,
   numpy,
   requests,
   scikit-image,
-  setuptools,
   toolz,
   zarr,
+
+  # tests
+  pytestCheckHook,
 }:
 
 buildPythonPackage rec {
   pname = "ome-zarr";
-  version = "0.10.3";
+  version = "0.11.1";
   pyproject = true;
-
-  disabled = pythonOlder "3.9";
 
   src = fetchFromGitHub {
     owner = "ome";
     repo = "ome-zarr-py";
     tag = "v${version}";
-    hash = "sha256-D17eNJYihVNzDoD0FNNMLP1rRvG6fTL97RrBqGgJSX0=";
+    hash = "sha256-3RXkz+UQvLixfYYhm5y/5vu9r0ga6s3xKx1azbmKFgg=";
   };
 
   build-system = [
     setuptools
+    setuptools-scm
   ];
 
   dependencies = [
-    numpy
-    dask
-    distributed
-    zarr
-    fsspec
     aiohttp
+    dask
+    fsspec
+    numpy
     requests
     scikit-image
     toolz
-  ] ++ fsspec.optional-dependencies.s3;
+    zarr
+  ]
+  ++ fsspec.optional-dependencies.s3;
 
-  nativeCheckInputs = [ pytestCheckHook ];
+  nativeCheckInputs = [
+    pytestCheckHook
+  ];
 
   disabledTests = [
     # attempts to access network

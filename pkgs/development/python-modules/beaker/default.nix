@@ -34,16 +34,15 @@ buildPythonPackage rec {
 
   build-system = [ setuptools ];
 
-  dependencies =
-    [
-      sqlalchemy
-      pycrypto
-      cryptography
-    ]
-    ++ lib.optionals (isPy27) [
-      funcsigs
-      pycryptopp
-    ];
+  dependencies = [
+    sqlalchemy
+    pycrypto
+    cryptography
+  ]
+  ++ lib.optionals (isPy27) [
+    funcsigs
+    pycryptopp
+  ];
 
   nativeCheckInputs = [
     glibcLocales
@@ -67,7 +66,7 @@ buildPythonPackage rec {
     description = "Session and Caching library with WSGI Middleware";
     homepage = "https://github.com/bbangert/beaker";
     license = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [ domenkozar ];
+    maintainers = with lib.maintainers; [ ];
     knownVulnerabilities = [ "CVE-2013-7489" ];
   };
 }

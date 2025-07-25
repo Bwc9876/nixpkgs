@@ -14,6 +14,7 @@
   bootBintoolsNoLibc ? if stdenv.targetPlatform.linker == "lld" then null else pkgs.bintoolsNoLibc,
   bootBintools ? if stdenv.targetPlatform.linker == "lld" then null else pkgs.bintools,
   llvmVersions ? { },
+  patchesFn ? lib.id,
   # Allows passthrough to packages via newScope in ./common/default.nix.
   # This makes it possible to do
   # `(llvmPackages.override { <someLlvmDependency> = bar; }).clang` and get
@@ -30,12 +31,15 @@ let
     "17.0.6".officialRelease.sha256 = "sha256-8MEDLLhocshmxoEBRSKlJ/GzJ8nfuzQ8qn0X/vLA+ag=";
     "18.1.8".officialRelease.sha256 = "sha256-iiZKMRo/WxJaBXct9GdAcAT3cz9d9pnAcO1mmR6oPNE=";
     "19.1.7".officialRelease.sha256 = "sha256-cZAB5vZjeTsXt9QHbP5xluWNQnAHByHtHnAhVDV0E6I=";
-    "20.0.0-git".gitRelease = {
-      rev = "6383a12e3b4339fa4743bb97da4d51dea6d2e2ea";
-      rev-version = "20.0.0-unstable-2025-01-25";
-      sha256 = "sha256-LMew+lFm+HrR5iwFDnoXA6B2LiU/pVqsy1YrP9xr5GU=";
+    "20.1.6".officialRelease.sha256 = "sha256-PfCzECiCM+k0hHqEUSr1TSpnII5nqIxg+Z8ICjmMj0Y=";
+    "21.1.0-rc1".officialRelease.sha256 = "sha256-EZMG3kNqGTvKSuvslbrtNnyqBCG5C2gN9Y2qHbiuh8Q=";
+    "22.0.0-git".gitRelease = {
+      rev = "f3a3270dbca3649b7d56aaa42cb8481fb34e2d67";
+      rev-version = "22.0.0-unstable-2025-07-20";
+      sha256 = "sha256-rMiPa8T2n0IWtOv0SYb+eWWHRfPTBGEb4yCp11gVzRE=";
     };
-  } // llvmVersions;
+  }
+  // llvmVersions;
 
   mkPackage =
     {
@@ -73,6 +77,7 @@ let
               gitRelease
               monorepoSrc
               version
+              patchesFn
               ;
           }
           // packageSetArgs # Allow overrides.

@@ -1,27 +1,29 @@
 {
   lib,
+  stdenv,
   fetchFromGitHub,
   rustPlatform,
   pkg-config,
   openssl,
   mpv,
   nix-update-script,
+  writableTmpDirAsHomeHook,
   versionCheckHook,
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "jellyfin-tui";
-  version = "1.1.0";
+  version = "1.2.3";
 
   src = fetchFromGitHub {
     owner = "dhonus";
     repo = "jellyfin-tui";
     tag = "v${version}";
-    hash = "sha256-k8hN6MfY/agg5Janq4s65te7uOmfEpXXzogaS3jNAC8=";
+    hash = "sha256-gT6Zs32BhSfwH+JjwJcY9wK7WrqGuaWP+q/2rF8gp4M=";
   };
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-Ca43CPjjUhNBclkJTt2xFWNRacEvRkKdHosnWSjfN2I=";
+  cargoHash = "sha256-U298pYDYzaRdU5w3FWHMkgaCT15aUTZITroVcEJ1Q0w=";
 
   nativeBuildInputs = [ pkg-config ];
   buildInputs = [
@@ -30,9 +32,16 @@ rustPlatform.buildRustPackage rec {
   ];
 
   nativeInstallCheckInputs = [
+    writableTmpDirAsHomeHook
     versionCheckHook
   ];
   versionCheckProgramArg = "--version";
+  versionCheckKeepEnvironment = [ "HOME" ];
+  preInstallCheck = ''
+    mkdir -p "$HOME/${
+      if stdenv.buildPlatform.isDarwin then "Library/Application Support" else ".local/share"
+    }"
+  '';
   doInstallCheck = true;
 
   passthru.updateScript = nix-update-script { };

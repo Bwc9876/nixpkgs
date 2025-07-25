@@ -14,7 +14,7 @@ rustPlatform.buildRustPackage rec {
 
   src = fetchFromGitHub {
     owner = "kpcyrd";
-    repo = pname;
+    repo = "sniffglue";
     rev = "v${version}";
     hash = "sha256-Pp/SJJQFpEU/4GKZQB8BjRGS4hqB850QbSb5WoG6Wh4=";
   };
@@ -24,13 +24,12 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ pkg-config ];
 
-  buildInputs =
-    [
-      libpcap
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [
-      libseccomp
-    ];
+  buildInputs = [
+    libpcap
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [
+    libseccomp
+  ];
 
   meta = with lib; {
     description = "Secure multithreaded packet sniffer";

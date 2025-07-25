@@ -17,7 +17,7 @@ let
   pname = "blast-bin";
   version = "2.16.0";
 
-  srcs = rec {
+  srcs = {
     x86_64-linux = fetchurl {
       url = "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${version}/ncbi-blast-${version}+-x64-linux.tar.gz";
       hash = "sha256-sLEwmMkB0jsyStFwDnRxu3QIp/f1F9dNX6rXEb526PQ=";
@@ -42,18 +42,17 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
 
-  buildInputs =
-    [
-      python3
-      perl
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [
-      zlib
-      bzip2
-      glib
-      libxml2
-      sqlite
-    ];
+  buildInputs = [
+    python3
+    perl
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [
+    zlib
+    bzip2
+    glib
+    libxml2
+    sqlite
+  ];
 
   installPhase = ''
     runHook preInstall

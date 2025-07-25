@@ -3,7 +3,6 @@
   callPackage,
   crystal,
   fetchFromGitHub,
-  fetchpatch,
   librsvg,
   pkg-config,
   libxml2,
@@ -87,15 +86,6 @@ crystal.buildCrystalPackage rec {
     sqlite
   ];
 
-  patches = [
-    # Fix proxied video streaming: https://github.com/iv-org/invidious/pull/4992
-    (fetchpatch {
-      name = "invidious-fix-video-proxy.patch";
-      url = "https://github.com/iv-org/invidious/compare/aa33d9b7ec5a41867c256542653ad8465fe22e7f~1...3ac8978e96069e58a02e91fc29bf52b8fc651d5c.patch";
-      hash = "sha256-xENsVRfEE9ACLiniOgGMDfdC0ZtJge1e1Lak2orLJro=";
-    })
-  ];
-
   format = "crystal";
   shardsFile = ./shards.nix;
   crystalBinaries.invidious = {
@@ -147,7 +137,6 @@ crystal.buildCrystalPackage rec {
       _999eagle
       GaetanLepage
       sbruder
-      pbsds
     ];
   };
 }

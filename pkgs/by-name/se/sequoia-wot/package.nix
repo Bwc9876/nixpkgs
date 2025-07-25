@@ -8,7 +8,6 @@
   nettle,
   openssl,
   sqlite,
-  darwin,
   gnupg,
 }:
 rustPlatform.buildRustPackage rec {
@@ -31,18 +30,13 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
   ];
 
-  buildInputs =
-    [
-      openssl
-      sqlite
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      darwin.apple_sdk.frameworks.SystemConfiguration
-      # See comment near sequoia-openpgp/crypto- buildFeatures
-    ]
-    ++ lib.optionals (!stdenv.targetPlatform.isWindows) [
-      nettle
-    ];
+  buildInputs = [
+    openssl
+    sqlite
+  ]
+  ++ lib.optionals (!stdenv.targetPlatform.isWindows) [
+    nettle
+  ];
 
   buildFeatures = [
     # Upstream uses the sequoia-openpgp crate, which doesn't force you to use a
@@ -64,7 +58,7 @@ rustPlatform.buildRustPackage rec {
 
   nativeCheckInputs = [ gnupg ];
 
-  # Install shell completion files and manual pages. Unfortunatly it is hard to
+  # Install shell completion files and manual pages. Unfortunately it is hard to
   # predict the paths to all of these files generated during the build, and it
   # is impossible to control these using `$OUT_DIR` or alike, as implied by
   # upstream's `build.rs`. This is a general Rust issue also discussed in

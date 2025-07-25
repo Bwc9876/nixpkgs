@@ -2,6 +2,7 @@
   aiohttp,
   aiohttp-sse-client2,
   aresponses,
+  awesomeversion,
   buildPythonPackage,
   fetchFromGitHub,
   lib,
@@ -13,14 +14,14 @@
 
 buildPythonPackage rec {
   pname = "pysmlight";
-  version = "0.1.5";
+  version = "0.2.7";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "smlight-tech";
     repo = "pysmlight";
     tag = "v${version}";
-    hash = "sha256-A/IppL1bTGvgdmPIGQS8rRNGrZIK8YTnEnKUJWAgs5Q=";
+    hash = "sha256-w5t8ApshET7DkxxDsEpRBdo3+sg05ch9ec85TI4dAms=";
   };
 
   build-system = [ poetry-core ];
@@ -28,6 +29,7 @@ buildPythonPackage rec {
   dependencies = [
     aiohttp
     aiohttp-sse-client2
+    awesomeversion
     mashumaro
   ];
 
@@ -38,6 +40,8 @@ buildPythonPackage rec {
     pytest-asyncio
     pytestCheckHook
   ];
+
+  __darwinAllowLocalNetworking = true;
 
   meta = {
     changelog = "https://github.com/smlight-tech/pysmlight/releases/tag/${src.tag}";

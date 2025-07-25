@@ -8,11 +8,10 @@
   frei0r,
   opencolorio,
   ffmpeg_6,
-  CoreFoundation,
   cmake,
   wrapQtAppsHook,
   openimageio,
-  openexr_3,
+  openexr,
   portaudio,
   imath,
   qtwayland,
@@ -27,10 +26,13 @@ let
     version = "2.4.15.0";
     src = (
       old.src.override {
-        rev = "v${version}";
+        tag = "v${version}";
         hash = "sha256-I2/JPmUBDb0bw7qbSZcAkYHB2q2Uo7En7ZurMwWhg/M=";
       }
     );
+
+    # robin-map headers require c++17
+    cmakeFlags = (old.cmakeFlags or [ ]) ++ [ (lib.cmakeFeature "CMAKE_CXX_STANDARD" "17") ];
   });
 in
 
@@ -78,12 +80,12 @@ stdenv.mkDerivation {
     opencolorio
     openimageio'
     imath
-    openexr_3
+    openexr
     portaudio
     qtwayland
     qtmultimedia
     qttools
-  ] ++ lib.optional stdenv.hostPlatform.isDarwin CoreFoundation;
+  ];
 
   meta = with lib; {
     description = "Professional open-source NLE video editor";

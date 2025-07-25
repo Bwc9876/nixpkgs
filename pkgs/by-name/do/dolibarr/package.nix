@@ -1,6 +1,6 @@
 {
-  stdenv,
   lib,
+  stdenv,
   fetchFromGitHub,
   nixosTests,
   stateDir ? "/var/lib/dolibarr",
@@ -8,13 +8,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "dolibarr";
-  version = "20.0.3";
+  version = "21.0.2";
 
   src = fetchFromGitHub {
     owner = "Dolibarr";
     repo = "dolibarr";
     tag = finalAttrs.version;
-    hash = "sha256-JqCDFdOkVQb9zH/ZCm7LsQktYDXXaB+0lS3HWqxE3YM=";
+    hash = "sha256-H1p20dDe7YDFFk0hwyNvJ7LG9/3FF7JPo322Cgb0gYo=";
   };
 
   dontBuild = true;
@@ -36,7 +36,9 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r * $out
   '';
 
-  passthru.tests = { inherit (nixosTests) dolibarr; };
+  passthru.tests = lib.optionalAttrs stdenv.hostPlatform.isLinux {
+    inherit (nixosTests) dolibarr;
+  };
 
   meta = {
     description = "Enterprise resource planning (ERP) and customer relationship manager (CRM) server";

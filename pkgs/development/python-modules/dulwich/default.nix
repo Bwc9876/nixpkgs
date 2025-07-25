@@ -20,16 +20,16 @@
 
 buildPythonPackage rec {
   pname = "dulwich";
-  version = "0.22.7";
+  version = "0.22.8";
   pyproject = true;
 
-  disabled = pythonOlder "3.7";
+  disabled = pythonOlder "3.9";
 
   src = fetchFromGitHub {
     owner = "jelmer";
     repo = "dulwich";
     tag = "dulwich-${version}";
-    hash = "sha256-BjDTqrApdinC9T62hhZIMS1udpaiAg1+7nvryF6d6pU=";
+    hash = "sha256-T0Tmu5sblTkqiak9U4ltkGbWw8ZE91pTlhPVMRi5Pxk=";
   };
 
   build-system = [
@@ -57,9 +57,10 @@ buildPythonPackage rec {
     git
     glibcLocales
     pytestCheckHook
-  ] ++ lib.flatten (lib.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (lib.attrValues optional-dependencies);
 
-  pytestFlagsArray = [ "tests" ];
+  enabledTestPaths = [ "tests" ];
 
   disabledTests = [
     # AssertionError: 'C:\\\\foo.bar\\\\baz' != 'C:\\foo.bar\\baz'
@@ -71,7 +72,7 @@ buildPythonPackage rec {
     "tests/contrib/test_swift_smoke.py"
   ];
 
-  doCheck = !stdenv.hostPlatform.isDarwin;
+  __darwinAllowLocalNetworking = true;
 
   pythonImportsCheck = [ "dulwich" ];
 

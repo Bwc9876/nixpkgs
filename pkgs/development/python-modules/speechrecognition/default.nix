@@ -2,7 +2,10 @@
   lib,
   buildPythonPackage,
   fetchFromGitHub,
+  cacert,
+  faster-whisper,
   flac,
+  google-cloud-speech,
   groq,
   httpx,
   openai-whisper,
@@ -15,12 +18,13 @@
   respx,
   setuptools,
   soundfile,
+  standard-aifc,
   typing-extensions,
 }:
 
 buildPythonPackage rec {
   pname = "speechrecognition";
-  version = "3.14.0";
+  version = "3.14.3";
   pyproject = true;
 
   disabled = pythonOlder "3.9";
@@ -29,7 +33,7 @@ buildPythonPackage rec {
     owner = "Uberi";
     repo = "speech_recognition";
     tag = version;
-    hash = "sha256-1tZ3w77VYPO7BK6y572MwY1BV2+UeSwEL1E3mpdkqJg=";
+    hash = "sha256-g//KKxPRe1pWVJo7GsRNIV59r0J7XJEoXvH0tGuV3Jk=";
   };
 
   postPatch = ''
@@ -43,11 +47,16 @@ buildPythonPackage rec {
 
   build-system = [ setuptools ];
 
-  dependencies = [ typing-extensions ];
+  dependencies = [
+    standard-aifc
+    typing-extensions
+  ];
 
   optional-dependencies = {
     assemblyai = [ requests ];
     audio = [ pyaudio ];
+    faster-whisper = [ faster-whisper ];
+    google-cloud = [ google-cloud-speech ];
     groq = [
       groq
       httpx
@@ -68,7 +77,8 @@ buildPythonPackage rec {
     pytestCheckHook
     pocketsphinx
     respx
-  ] ++ lib.flatten (builtins.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (lib.attrValues optional-dependencies);
 
   pythonImportsCheck = [ "speech_recognition" ];
 

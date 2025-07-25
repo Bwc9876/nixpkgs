@@ -7,21 +7,26 @@
 }:
 
 let
-  version = "0.90.12";
+  version = "0.97.1";
 
-  serverSource.url = "https://github.com/TriliumNext/Notes/releases/download/v${version}/TriliumNextNotes-v${version}-server-linux-x64.tar.xz";
-  serverSource.sha256 = "0gvb01cj334n805rs230xwwcv4rf2z2giikpagw8wqrs54gy3b35";
+  serverSource_x64.url = "https://github.com/TriliumNext/Trilium/releases/download/v${version}/TriliumNotes-Server-v${version}-linux-x64.tar.xz";
+  serverSource_x64.sha256 = "1y0ass5b3c8qx28b31x2h7i1rlvdyjimsklgjpv8d47micsg6m7z";
+  serverSource_arm64.url = "https://github.com/TriliumNext/Trilium/releases/download/v${version}/TriliumNotes-Server-v${version}-linux-arm64.tar.xz";
+  serverSource_arm64.sha256 = "12bnmbm1p98633xsyxq6rr05jl79bn820915a0gmq14np7vskhmp";
+
+  serverSource =
+    if stdenv.hostPlatform.isx86_64 then
+      serverSource_x64
+    else if stdenv.hostPlatform.isAarch64 then
+      serverSource_arm64
+    else
+      throw "${stdenv.hostPlatform.config} not supported by trilium-next-server";
 in
 stdenv.mkDerivation {
   pname = "trilium-next-server";
   inherit version;
 
   src = fetchurl serverSource;
-
-  patches = [
-    # patch logger to use console instead of rolling files
-    ./0001-Use-console-logger-instead-of-rolling-files.patch
-  ];
 
   nativeBuildInputs = [
     autoPatchelfHook
@@ -43,7 +48,7 @@ stdenv.mkDerivation {
 
     makeWrapper "$out/share/trilium-server/node/bin/node" "$out/bin/trilium-server" \
       --chdir "$out/share/trilium-server" \
-      --add-flags "src/main"
+      --add-flags "main.cjs"
 
     runHook postInstall
   '';
@@ -53,7 +58,10 @@ stdenv.mkDerivation {
     homepage = "https://github.com/TriliumNext/Notes";
     license = lib.licenses.agpl3Plus;
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
-    platforms = [ "x86_64-linux" ];
+    platforms = [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
     maintainers = with lib.maintainers; [
       eliandoran
       fliegendewurst

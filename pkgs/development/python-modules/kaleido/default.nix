@@ -70,10 +70,6 @@ buildPythonPackage rec {
     mkdir -p $out/bin
     ln -s $out/${python.sitePackages}/kaleido/executable/bin/kaleido $out/bin/kaleido
 
-    # Replace bundled swiftshader with libGL
-    rm -rf $out/${python.sitePackages}/kaleido/executable/bin/swiftshader
-    ln -s ${libGL}/lib $out/${python.sitePackages}/kaleido/executable/bin/swiftshader
-
     # Relace bundled libraries with nixpkgs-packaged libraries
     rm -rf $out/${python.sitePackages}/kaleido/executable/lib
     mkdir -p $out/${python.sitePackages}/kaleido/executable/lib
@@ -95,6 +91,11 @@ buildPythonPackage rec {
     #mkdir -p $out/${python.sitePackages}/kaleido/executable/xdg/fonts/truetype/dejavu $out/${python.sitePackages}/kaleido/executable/xdg/fonts/truetype/lato
     #ln -s ${dejavu_fonts}/share/fonts/truetype/* $out/${python.sitePackages}/kaleido/executable/xdg/fonts/truetype/dejavu/
     #ln -s ${lato}/share/fonts/lato/* $out/${python.sitePackages}/kaleido/executable/xdg/fonts/truetype/lato/
+  ''
+  + lib.optionalString (!stdenv.hostPlatform.isDarwin) ''
+    # Replace bundled swiftshader with libGL
+    rm -rf $out/${python.sitePackages}/kaleido/executable/bin/swiftshader
+    ln -s ${libGL}/lib $out/${python.sitePackages}/kaleido/executable/bin/swiftshader
   '';
 
   passthru.tests = lib.optionalAttrs (!stdenv.hostPlatform.isDarwin) {

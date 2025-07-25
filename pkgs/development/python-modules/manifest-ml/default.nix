@@ -84,7 +84,8 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [
     pytestCheckHook
-  ] ++ lib.flatten (lib.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (lib.attrValues optional-dependencies);
 
   preCheck = ''
     export HOME=$TMPDIR
@@ -107,7 +108,7 @@ buildPythonPackage rec {
     "test_run_chat"
     "test_run"
     "test_score_run"
-    # Test is time-senstive
+    # Test is time-sensitive
     "test_timing"
   ];
 

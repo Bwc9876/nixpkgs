@@ -11,7 +11,6 @@
   requests,
   moto,
   paramiko,
-  pynacl,
   pytestCheckHook,
   responses,
   setuptools,
@@ -21,7 +20,7 @@
 
 buildPythonPackage rec {
   pname = "smart-open";
-  version = "7.1.0";
+  version = "7.2.0";
   pyproject = true;
 
   disabled = pythonOlder "3.7";
@@ -30,7 +29,7 @@ buildPythonPackage rec {
     owner = "RaRe-Technologies";
     repo = "smart_open";
     tag = "v${version}";
-    hash = "sha256-ANbM0bKmkK25WCKxV7KHlPjzfTAY7dP67mmahRwtXI8=";
+    hash = "sha256-/16Is90235scTAYUW/65QxcTddD0+aiG5TLzYsBUE1A=";
   };
 
   build-system = [ setuptools ];
@@ -57,10 +56,10 @@ buildPythonPackage rec {
     moto
     pytestCheckHook
     responses
-    pynacl
-  ] ++ lib.flatten (lib.attrValues optional-dependencies);
+  ]
+  ++ lib.flatten (lib.attrValues optional-dependencies);
 
-  pytestFlagsArray = [ "smart_open" ];
+  enabledTestPaths = [ "smart_open" ];
 
   disabledTests = [
     # https://github.com/RaRe-Technologies/smart_open/issues/784

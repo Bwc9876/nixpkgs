@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "qalculate-gtk";
-  version = "5.5.0";
+  version = "5.6.0";
 
   src = fetchFromGitHub {
     owner = "qalculate";
     repo = "qalculate-gtk";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-9/fj+dwnEpbfcqBDQowhU4ltr/h43NQYTMUQnLL4Ut8=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-yjZ2Pq6ODEWhBveq4yx8bbWYG557JBFH84TdNr6bHkw=";
   };
 
   hardeningDisable = [ "format" ];
@@ -30,7 +30,8 @@ stdenv.mkDerivation (finalAttrs: {
     pkg-config
     autoreconfHook
     wrapGAppsHook3
-  ] ++ lib.optionals stdenv.hostPlatform.isDarwin [ desktopToDarwinBundle ];
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [ desktopToDarwinBundle ];
   buildInputs = [
     libqalculate
     gtk3
@@ -42,9 +43,8 @@ stdenv.mkDerivation (finalAttrs: {
     description = "Ultimate desktop calculator";
     homepage = "http://qalculate.github.io";
     maintainers = with maintainers; [
-      gebner
       doronbehar
-      alyaeanyx
+      pentane
       aleksana
     ];
     license = licenses.gpl2Plus;

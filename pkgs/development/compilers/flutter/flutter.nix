@@ -3,7 +3,11 @@
   version,
   engineVersion,
   engineHashes ? { },
-  engineUrl ? "https://github.com/flutter/engine.git@${engineVersion}",
+  engineUrl ?
+    if lib.versionAtLeast version "3.29" then
+      "https://github.com/flutter/flutter.git@${engineVersion}"
+    else
+      "https://github.com/flutter/engine.git@${engineVersion}",
   enginePatches ? [ ],
   engineRuntimeModes ? [
     "release"
@@ -65,7 +69,8 @@ let
       makeWrapper
       jq
       gitMinimal
-    ] ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.DarwinTools ];
+    ]
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.DarwinTools ];
     strictDeps = true;
 
     preConfigure = ''
@@ -102,8 +107,6 @@ let
       # Some of flutter_tools's dependencies contain static assets. The
       # application attempts to read its own package_config.json to find these
       # assets at runtime.
-      # TODO: Remove this once Flutter 3.24 is the lowest version in Nixpkgs.
-      # https://github.com/flutter/flutter/pull/150340 makes it redundant.
       mkdir -p packages/flutter_tools/.dart_tool
       ln -s '${flutterTools.pubcache}/package_config.json' packages/flutter_tools/.dart_tool/package_config.json
 
@@ -151,7 +154,8 @@ let
     doInstallCheck = true;
     nativeInstallCheckInputs = [
       which
-    ] ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.DarwinTools ];
+    ]
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.DarwinTools ];
     installCheckPhase = ''
       runHook preInstallCheck
 
@@ -163,24 +167,23 @@ let
       runHook postInstallCheck
     '';
 
-    passthru =
-      {
-        # TODO: rely on engine.version instead of engineVersion
-        inherit
-          dart
-          engineVersion
-          artifactHashes
-          channel
-          ;
-        tools = flutterTools;
-        # The derivation containing the original Flutter SDK files.
-        # When other derivations wrap this one, any unmodified files
-        # found here should be included as-is, for tooling compatibility.
-        sdk = unwrapped;
-      }
-      // lib.optionalAttrs (engine != null) {
-        inherit engine;
-      };
+    passthru = {
+      # TODO: rely on engine.version instead of engineVersion
+      inherit
+        dart
+        engineVersion
+        artifactHashes
+        channel
+        ;
+      tools = flutterTools;
+      # The derivation containing the original Flutter SDK files.
+      # When other derivations wrap this one, any unmodified files
+      # found here should be included as-is, for tooling compatibility.
+      sdk = unwrapped;
+    }
+    // lib.optionalAttrs (engine != null) {
+      inherit engine;
+    };
 
     meta = with lib; {
       description = "Flutter is Google's SDK for building mobile, web and desktop with Dart";
@@ -196,11 +199,11 @@ let
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      maintainers =
-        teams.flutter.members
-        ++ (with maintainers; [
-          ericdallo
-        ]);
+      mainProgram = "flutter";
+      maintainers = with maintainers; [
+        ericdallo
+      ];
+      teams = [ teams.flutter ];
     };
   };
 in

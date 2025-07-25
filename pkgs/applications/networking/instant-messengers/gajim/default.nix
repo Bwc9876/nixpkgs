@@ -6,10 +6,10 @@
 
   # Native dependencies
   python3,
-  gtk3,
+  gtk4,
   gobject-introspection,
   adwaita-icon-theme,
-  gtksourceview4,
+  gtksourceview5,
   glib-networking,
 
   # Test dependencies
@@ -40,34 +40,33 @@
 
 python3.pkgs.buildPythonApplication rec {
   pname = "gajim";
-  version = "1.9.5";
+  version = "2.2.0";
 
   src = fetchurl {
     url = "https://gajim.org/downloads/${lib.versions.majorMinor version}/gajim-${version}.tar.gz";
-    hash = "sha256-f99NsOsWp+vGecI2DxRfZOCrz/DxaRPEX5LI642HVjw=";
+    hash = "sha256-TOZuMiE5RjaJYvNWxl2FyCp6uIO+LLWiRb7N9jc1yRk=";
   };
 
   format = "pyproject";
 
-  buildInputs =
-    [
-      gtk3
-      adwaita-icon-theme
-      gtksourceview4
-      glib-networking
-    ]
-    ++ lib.optionals enableJingle [
-      farstream
-      gstreamer
-      gst-plugins-base
-      gst-libav
-      gst-plugins-good
-      libnice
-    ]
-    ++ lib.optional enableSecrets libsecret
-    ++ lib.optional enableSpelling gspell
-    ++ lib.optional enableUPnP gupnp-igd
-    ++ lib.optional enableAppIndicator libappindicator-gtk3;
+  buildInputs = [
+    gtk4
+    adwaita-icon-theme
+    gtksourceview5
+    glib-networking
+  ]
+  ++ lib.optionals enableJingle [
+    farstream
+    gstreamer
+    gst-plugins-base
+    gst-libav
+    gst-plugins-good
+    libnice
+  ]
+  ++ lib.optional enableSecrets libsecret
+  ++ lib.optional enableSpelling gspell
+  ++ lib.optional enableUPnP gupnp-igd
+  ++ lib.optional enableAppIndicator libappindicator-gtk3;
 
   nativeBuildInputs = [
     gettext
@@ -139,6 +138,7 @@ python3.pkgs.buildPythonApplication rec {
     maintainers = with lib.maintainers; [
       raskin
       abbradar
+      hlad
     ];
     downloadPage = "http://gajim.org/download/";
     platforms = lib.platforms.linux;

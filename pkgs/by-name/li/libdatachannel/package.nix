@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation rec {
   pname = "libdatachannel";
-  version = "0.22.4";
+  version = "0.23.0";
 
   src = fetchFromGitHub {
     owner = "paullouisageneau";
     repo = "libdatachannel";
     rev = "v${version}";
-    hash = "sha256-mnBB2UyeQ73NckE3uF91RhezJDKMQeoOKn8515ygrU0=";
+    hash = "sha256-bzheNNG6J0tswFZT+Vlqm2FS9MArois46yb8XeL5YqI=";
   };
 
   outputs = [

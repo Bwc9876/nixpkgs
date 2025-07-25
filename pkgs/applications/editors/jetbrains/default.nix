@@ -37,6 +37,7 @@ in
   libX11,
 
   vmopts ? null,
+  forceWayland ? false,
 }:
 
 let
@@ -55,7 +56,8 @@ let
       + lib.optionalString meta.isOpenSource (
         if fromSource then " (built from source)" else " (patched binaries from jetbrains)"
       );
-    maintainers = lib.teams.jetbrains.members ++ map (x: lib.maintainers."${x}") meta.maintainers;
+    maintainers = map (x: lib.maintainers."${x}") meta.maintainers;
+    teams = [ lib.teams.jetbrains ];
     license = if meta.isOpenSource then lib.licenses.asl20 else lib.licenses.unfree;
     sourceProvenance =
       if fromSource then
@@ -76,15 +78,20 @@ let
       extraWrapperArgs ? [ ],
       extraLdPath ? [ ],
       extraBuildInputs ? [ ],
+      extraTests ? { },
     }:
     mkJetBrainsProductCore {
       inherit
         pname
         jdk
-        extraWrapperArgs
-        extraLdPath
         extraBuildInputs
         ;
+      extraWrapperArgs =
+        extraWrapperArgs
+        ++ lib.optionals (stdenv.hostPlatform.isLinux && forceWayland) [
+          ''--add-flags "\''${WAYLAND_DISPLAY:+-Dawt.toolkit.name=WLToolkit}"''
+        ];
+      extraLdPath = extraLdPath ++ lib.optionals (stdenv.hostPlatform.isLinux) [ libGL ];
       src =
         if fromSource then
           communitySources."${pname}"
@@ -99,6 +106,9 @@ let
       inherit (ideInfo."${pname}") wmClass product;
       productShort = ideInfo."${pname}".productShort or ideInfo."${pname}".product;
       meta = mkMeta ideInfo."${pname}".meta fromSource;
+      passthru.tests = extraTests // {
+        plugins = callPackage ./plugins/tests.nix { ideName = pname; };
+      };
       libdbm =
         if ideInfo."${pname}".meta.isOpenSource then
           communitySources."${pname}".libdbm
@@ -317,26 +327,24 @@ rec {
   rider =
     (mkJetBrainsProduct {
       pname = "rider";
-      extraBuildInputs =
-        [
-          fontconfig
-          stdenv.cc.cc
-          openssl
-          libxcrypt
-          lttng-ust_2_12
-          musl
-        ]
-        ++ lib.optionals (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isAarch64) [
-          expat
-          libxml2
-          xz
-        ];
+      extraBuildInputs = [
+        fontconfig
+        stdenv.cc.cc
+        openssl
+        libxcrypt
+        lttng-ust_2_12
+        musl
+      ]
+      ++ lib.optionals (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isAarch64) [
+        expat
+        libxml2
+        xz
+      ];
       extraLdPath = lib.optionals (stdenv.hostPlatform.isLinux) [
         # Avalonia dependencies needed for dotMemory
         libICE
         libSM
         libX11
-        libGL
       ];
     }).overrideAttrs
       (attrs: {
@@ -378,7 +386,6 @@ rec {
           libxcrypt-legacy
           fontconfig
           xorg.libX11
-          libGL
         ]
         ++ lib.optionals (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isAarch64) [
           expat
@@ -403,8 +410,6 @@ rec {
               xargs patchelf \
                 --replace-needed libssl.so.10 libssl.so \
                 --replace-needed libcrypto.so.10 libcrypto.so
-
-              chmod +x $PWD/plugins/intellij-rust/bin/linux/*/intellij-rust-native-helper
             )
           '';
       });
@@ -425,8 +430,6 @@ rec {
     ];
   };
 
-  plugins = callPackage ./plugins { } // {
-    __attrsFailEvaluation = true;
-  };
+  plugins = callPackage ./plugins { };
 
 }

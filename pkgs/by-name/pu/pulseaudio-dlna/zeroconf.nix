@@ -13,6 +13,7 @@
 buildPythonPackage rec {
   pname = "zeroconf";
   version = "0.19.1";
+  format = "setuptools";
 
   src = fetchPypi {
     inherit pname version;
@@ -24,7 +25,8 @@ buildPythonPackage rec {
     six
     enum-compat
     ifaddr
-  ] ++ lib.optionals (pythonOlder "3.5") [ typing ];
+  ]
+  ++ lib.optionals (pythonOlder "3.5") [ typing ];
 
   meta = with lib; {
     description = "Pure python implementation of multicast DNS service discovery";

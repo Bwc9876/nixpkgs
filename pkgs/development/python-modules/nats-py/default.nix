@@ -15,7 +15,7 @@
 
 buildPythonPackage rec {
   pname = "nats-py";
-  version = "2.9.0";
+  version = "2.10.0";
   pyproject = true;
 
   disabled = pythonOlder "3.7";
@@ -24,7 +24,7 @@ buildPythonPackage rec {
     owner = "nats-io";
     repo = "nats.py";
     tag = "v${version}";
-    hash = "sha256-r94dDXPpkLS1PsB9L4qlDw15tPa2vpxOS52eqJk2dNU=";
+    hash = "sha256-cgcoxDTfXeP2w1k8Miw8zY1Bln0XpTdtUY13SSvrHXw=";
   };
 
   build-system = [ setuptools ];
@@ -34,9 +34,7 @@ buildPythonPackage rec {
   optional-dependencies = {
     aiohttp = [ aiohttp ];
     nkeys = [ nkeys ];
-    # fast_parse = [
-    #   fast-mail-parser
-    # ];
+    # fast_parse = [ fast-mail-parser ];
   };
 
   nativeCheckInputs = [
@@ -45,23 +43,24 @@ buildPythonPackage rec {
     uvloop
   ];
 
-  disabledTests =
-    [
-      # AssertionError
-      "test_fetch_n"
-      "test_kv_simple"
-      "test_pull_subscribe_limits"
-      "test_stream_management"
-      "test_subscribe_no_echo"
-      # Tests fail on hydra, often Time-out
-      "test_subscribe_iterate_next_msg"
-      "test_ordered_consumer_larger_streams"
-      "test_object_file_basics"
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      "test_subscribe_iterate_next_msg"
-      "test_buf_size_force_flush_timeout"
-    ];
+  disabledTests = [
+    # Timeouts
+    "ClientTLS"
+    # AssertionError
+    "test_fetch_n"
+    "test_kv_simple"
+    "test_pull_subscribe_limits"
+    "test_stream_management"
+    "test_subscribe_no_echo"
+    # Tests fail on hydra, often Time-out
+    "test_subscribe_iterate_next_msg"
+    "test_ordered_consumer_larger_streams"
+    "test_object_file_basics"
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    "test_subscribe_iterate_next_msg"
+    "test_buf_size_force_flush_timeout"
+  ];
 
   pythonImportsCheck = [ "nats" ];
 

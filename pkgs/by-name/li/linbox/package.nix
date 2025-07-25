@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitHub {
     owner = "linbox-team";
-    repo = pname;
+    repo = "linbox";
     rev = "v${version}";
     sha256 = "sha256-mW84a98KPLqcHMjX3LIYTmVe0ngUdz6RJLpoDaAqKU8=";
   };
@@ -63,22 +63,21 @@ stdenv.mkDerivation rec {
     fflas-ffpack
   ];
 
-  configureFlags =
-    [
-      "--with-blas-libs=-lblas"
-      "--without-archnative"
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isx86_64 [
-      # disable SIMD instructions (which are enabled *when available* by default)
-      "--${if stdenv.hostPlatform.sse3Support then "enable" else "disable"}-sse3"
-      "--${if stdenv.hostPlatform.ssse3Support then "enable" else "disable"}-ssse3"
-      "--${if stdenv.hostPlatform.sse4_1Support then "enable" else "disable"}-sse41"
-      "--${if stdenv.hostPlatform.sse4_2Support then "enable" else "disable"}-sse42"
-      "--${if stdenv.hostPlatform.avxSupport then "enable" else "disable"}-avx"
-      "--${if stdenv.hostPlatform.avx2Support then "enable" else "disable"}-avx2"
-      "--${if stdenv.hostPlatform.fmaSupport then "enable" else "disable"}-fma"
-      "--${if stdenv.hostPlatform.fma4Support then "enable" else "disable"}-fma4"
-    ];
+  configureFlags = [
+    "--with-blas-libs=-lblas"
+    "--without-archnative"
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isx86_64 [
+    # disable SIMD instructions (which are enabled *when available* by default)
+    "--${if stdenv.hostPlatform.sse3Support then "enable" else "disable"}-sse3"
+    "--${if stdenv.hostPlatform.ssse3Support then "enable" else "disable"}-ssse3"
+    "--${if stdenv.hostPlatform.sse4_1Support then "enable" else "disable"}-sse41"
+    "--${if stdenv.hostPlatform.sse4_2Support then "enable" else "disable"}-sse42"
+    "--${if stdenv.hostPlatform.avxSupport then "enable" else "disable"}-avx"
+    "--${if stdenv.hostPlatform.avx2Support then "enable" else "disable"}-avx2"
+    "--${if stdenv.hostPlatform.fmaSupport then "enable" else "disable"}-fma"
+    "--${if stdenv.hostPlatform.fma4Support then "enable" else "disable"}-fma4"
+  ];
 
   # https://github.com/linbox-team/linbox/issues/304
   hardeningDisable = [ "fortify3" ];
@@ -91,7 +90,7 @@ stdenv.mkDerivation rec {
     description = "C++ library for exact, high-performance linear algebra";
     mainProgram = "linbox-config";
     license = licenses.lgpl21Plus;
-    maintainers = teams.sage.members;
+    teams = [ teams.sage ];
     platforms = platforms.unix;
     homepage = "https://linalg.org/";
   };

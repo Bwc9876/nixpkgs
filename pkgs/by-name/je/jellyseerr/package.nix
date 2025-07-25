@@ -6,6 +6,7 @@
   makeWrapper,
   nodejs_22,
   python3,
+  python3Packages,
   sqlite,
   nix-update-script,
 }:
@@ -16,24 +17,26 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "jellyseerr";
-  version = "2.3.0";
+  version = "2.7.0";
 
   src = fetchFromGitHub {
     owner = "Fallenbagel";
     repo = "jellyseerr";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-vAMuiHcf13CDyOB0k36DXUk+i6K6h/R7dmBLJsMkzNA=";
+    hash = "sha256-JzJYRwrwDk8LQZAfWwym+SFTn8YhALghpZb2Dd+3nP4=";
   };
 
   pnpmDeps = pnpm.fetchDeps {
     inherit (finalAttrs) pname version src;
-    hash = "sha256-iSzs+lMQzcFjUz4K3rYP0I6g/wVz6u49FSQuPHXbVRM=";
+    fetcherVersion = 1;
+    hash = "sha256-Ym16jPHMHKmojMQOuMamDsW/u+oP1UhbCP5dooTUzFQ=";
   };
 
   buildInputs = [ sqlite ];
 
   nativeBuildInputs = [
     python3
+    python3Packages.distutils
     nodejs
     makeWrapper
     pnpm.configHook
@@ -48,16 +51,22 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     runHook preBuild
+
     pnpm build
     pnpm prune --prod --ignore-scripts
     rm -rf .next/cache
+
+    # Clean up broken symlinks left behind by `pnpm prune`
+    # https://github.com/pnpm/pnpm/issues/3645
+    find node_modules -xtype l -delete
+
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
     mkdir -p $out/share
-    cp -r -t $out/share .next node_modules dist public package.json overseerr-api.yml
+    cp -r -t $out/share .next node_modules dist public package.json jellyseerr-api.yml
     runHook postInstall
   '';
 
